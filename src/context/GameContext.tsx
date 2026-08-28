@@ -37,8 +37,19 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!socket) return;
 
-    const handleState = (state: GameState) => setGameState(state);
-    const handleSeatError = (msg: string) => setError(msg);
+    const handleState = (state: GameState) => {
+      setGameState(state);
+      setMySeatId((prev) => {
+        if (!prev) return null;
+        const seat = state.seats[prev];
+        if (!seat || seat.playerId !== socket.id) return null;
+        return prev;
+      });
+    };
+    const handleSeatError = (msg: string) => {
+      setError(msg);
+      setMySeatId(null);
+    };
     const handleMoveError = (msg: string) => setError(msg);
 
     socket.on('game-state', handleState);

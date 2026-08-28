@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import type { ClientToServerEvents, ServerToClientEvents } from '@/shared/types';
 
@@ -18,26 +18,26 @@ export function useSocket() {
 }
 
 export function SocketProvider({ children }: { children: React.ReactNode }) {
+  const [socket, setSocket] = useState<AppSocket | null>(null);
   const [connected, setConnected] = useState(false);
-  const socketRef = useRef<AppSocket | null>(null);
 
   useEffect(() => {
-    const socket: AppSocket = io({
+    const s: AppSocket = io({
       transports: ['websocket', 'polling'],
     });
 
-    socketRef.current = socket;
+    setSocket(s);
 
-    socket.on('connect', () => setConnected(true));
-    socket.on('disconnect', () => setConnected(false));
+    s.on('connect', () => setConnected(true));
+    s.on('disconnect', () => setConnected(false));
 
     return () => {
-      socket.disconnect();
+      s.disconnect();
     };
   }, []);
 
   return (
-    <SocketContext.Provider value={{ socket: socketRef.current, connected }}>
+    <SocketContext.Provider value={{ socket, connected }}>
       {children}
     </SocketContext.Provider>
   );

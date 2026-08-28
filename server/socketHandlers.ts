@@ -51,8 +51,6 @@ export function setupSocketHandlers(io: Server<ClientToServerEvents, ServerToCli
 
       if (gameState.status === 'waiting' && allSeatsOccupied(gameState)) {
         gameState.status = 'playing';
-        gameState.turn = 'white';
-        gameState.phase = 'mind-selecting';
       }
 
       io.emit('player-joined', { seatId, playerName: seat.playerName });
