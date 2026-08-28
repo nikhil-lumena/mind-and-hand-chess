@@ -1,0 +1,53 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.dialog {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 24px 32px;
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+}
+
+.title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.options {
+  display: flex;
+  gap: 12px;
+}
+
+.option {
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  border: 2px solid var(--border-subtle);
+  background: rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.option:hover {
+  border-color: var(--accent-gold);
+  background: rgba(240, 192, 64, 0.15);
+  transform: scale(1.08);
+}
+
+.pieceIcon {
+  font-size: 40px;
+  line-height: 1;
+  filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3));
+}

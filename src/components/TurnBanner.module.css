@@ -1,0 +1,77 @@
+.banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border: 1px solid var(--border-subtle);
+  width: 100%;
+  max-width: 680px;
+  flex-wrap: wrap;
+}
+
+.waiting {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-secondary);
+}
+
+.whiteTurn {
+  background: rgba(245, 230, 208, 0.1);
+  border-color: rgba(245, 230, 208, 0.2);
+}
+
+.blackTurn {
+  background: rgba(100, 100, 140, 0.15);
+  border-color: rgba(100, 100, 140, 0.25);
+}
+
+.myTurn {
+  border-color: rgba(240, 192, 64, 0.5);
+  box-shadow: 0 0 16px rgba(240, 192, 64, 0.15);
+}
+
+.teamBadge {
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+}
+
+.phaseText {
+  color: var(--text-secondary);
+}
+
+.playerText {
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.youTag {
+  background: var(--accent-gold);
+  color: #1a1a2e;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.08em;
+}
+
+.checkBadge {
+  background: var(--accent-red);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 4px;
+  letter-spacing: 0.06em;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
