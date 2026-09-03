@@ -13,6 +13,7 @@ interface GameContextValue {
   joinSeat: (seatId: SeatId, playerName?: string) => void;
   leaveSeat: () => void;
   selectPiece: (square: string) => void;
+  selectMindMove: (from: string, to: string) => void;
   setMindIntent: (to: string) => void;
   makeMove: (from: string, to: string, promotion?: string) => void;
   newGame: () => void;
@@ -149,6 +150,27 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     [clientId],
   );
 
+  const selectMindMove = useCallback(
+    (from: string, to: string) => {
+      setGameState((prev) => {
+        if (!prev.syncMode || (prev.phase !== 'mind-selecting' && prev.phase !== 'mind-intent')) {
+          return prev;
+        }
+        return { ...prev, selectedSquare: from, phase: 'hand-moving' };
+      });
+      apiCall('/api/game/select', { square: from, to, clientId }).catch((err) => {
+        setError(err.message);
+        apiCall('/api/game/state')
+          .then((state) => {
+            setGameState(state);
+            syncMySeat(state, clientIdRef.current);
+          })
+          .catch(() => {});
+      });
+    },
+    [clientId],
+  );
+
   const setMindIntentAction = useCallback(
     (to: string) => {
       apiCall('/api/game/intent', { to, clientId }).catch((err) => setError(err.message));
@@ -195,6 +217,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         joinSeat,
         leaveSeat,
         selectPiece,
+        selectMindMove,
         setMindIntent: setMindIntentAction,
         makeMove,
         newGame,

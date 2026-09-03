@@ -87,7 +87,7 @@ export function trySelectPiece(
   if (state.status !== 'playing') {
     return { success: false, error: 'Game is not in progress.' };
   }
-  if (state.phase !== 'mind-selecting') {
+  if (state.phase !== 'mind-selecting' && state.phase !== 'mind-intent') {
     return { success: false, error: 'Not the Mind selection phase.' };
   }
 
@@ -161,6 +161,22 @@ export function trySetMindIntent(
     },
     mindIntent: { from: state.selectedSquare, to },
   };
+}
+
+export function trySelectMindMove(
+  state: GameState,
+  from: string,
+  to: string,
+  playerId: string
+): { success: boolean; error?: string; newState?: GameState; mindIntent?: MindIntent } {
+  const selected = trySelectPiece(state, from, playerId);
+  if (!selected.success || !selected.newState) {
+    return selected;
+  }
+  if (!state.syncMode) {
+    return selected;
+  }
+  return trySetMindIntent(selected.newState, to, playerId);
 }
 
 export function tryMakeMove(

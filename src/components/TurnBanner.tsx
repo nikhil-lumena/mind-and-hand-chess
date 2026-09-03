@@ -30,7 +30,7 @@ export function TurnBanner() {
 
   let phaseLabel: string;
   if (gameState.phase === 'mind-selecting') {
-    phaseLabel = 'Mind selects a piece';
+    phaseLabel = gameState.syncMode ? 'Mind chooses a move' : 'Mind selects a piece';
   } else if (gameState.phase === 'mind-intent') {
     phaseLabel = 'Mind picks intended destination';
   } else {

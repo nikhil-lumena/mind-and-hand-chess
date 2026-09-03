@@ -73,7 +73,7 @@ export function Lobby() {
             <span className={styles.syncToggleIcon}>🔗</span>
             <span className={styles.syncToggleText}>
               <strong>Sync Mode</strong>
-              <span className={styles.syncToggleDesc}>Mind picks a secret destination; compare after Hand moves</span>
+              <span className={styles.syncToggleDesc}>Mind drags a secret move; compare after Hand moves</span>
             </span>
             <button
               type="button"
