@@ -3,16 +3,17 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { useRealtime } from './RealtimeContext';
 import type { GameState, SeatId } from '@/shared/types';
-import { createInitialState } from '@/shared/gameEngine';
+import { createInitialState, tryMakeMove } from '@/shared/gameEngine';
 
 interface GameContextValue {
   gameState: GameState;
   mySeatId: SeatId | null;
   myPlayerName: string;
   setMyPlayerName: (name: string) => void;
-  joinSeat: (seatId: SeatId) => void;
+  joinSeat: (seatId: SeatId, playerName?: string) => void;
   leaveSeat: () => void;
   selectPiece: (square: string) => void;
+  selectMindMove: (from: string, to: string) => void;
   setMindIntent: (to: string) => void;
   makeMove: (from: string, to: string, promotion?: string) => void;
   newGame: () => void;
@@ -56,15 +57,20 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   const chunksRef = useRef<Map<string, string[]>>(new Map());
 
   useEffect(() => {
-    apiCall('/api/game/state')
-      .then((state) => {
-        setGameState(state);
-        syncMySeat(state, clientIdRef.current);
-      })
-      .catch(() => {})
-      .finally(() => setHydrated(true));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    const loadState = () =>
+      apiCall('/api/game/state')
+        .then((state) => {
+          setGameState(state);
+          syncMySeat(state, clientIdRef.current);
+        })
+        .catch(() => {});
+
+    loadState().finally(() => setHydrated(true));
+    if (channel) return;
+
+    const interval = setInterval(loadState, 400);
+    return () => clearInterval(interval);
+  }, [channel]);
 
   useEffect(() => {
     if (!channel) return;
@@ -119,9 +125,11 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   }
 
   const joinSeat = useCallback(
-    (seatId: SeatId) => {
+    (seatId: SeatId, playerName?: string) => {
+      const name = (playerName ?? myPlayerName).trim();
+      setMyPlayerName(name);
       setError(null);
-      apiCall('/api/game/join', { seatId, playerName: myPlayerName, clientId })
+      apiCall('/api/game/join', { seatId, playerName: name, clientId })
         .then(() => setMySeatId(seatId))
         .catch((err) => {
           setError(err.message);
@@ -145,6 +153,27 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     [clientId],
   );
 
+  const selectMindMove = useCallback(
+    (from: string, to: string) => {
+      setGameState((prev) => {
+        if (!prev.syncMode || (prev.phase !== 'mind-selecting' && prev.phase !== 'mind-intent')) {
+          return prev;
+        }
+        return { ...prev, selectedSquare: from, phase: 'hand-moving' };
+      });
+      apiCall('/api/game/select', { square: from, to, clientId }).catch((err) => {
+        setError(err.message);
+        apiCall('/api/game/state')
+          .then((state) => {
+            setGameState(state);
+            syncMySeat(state, clientIdRef.current);
+          })
+          .catch(() => {});
+      });
+    },
+    [clientId],
+  );
+
   const setMindIntentAction = useCallback(
     (to: string) => {
       apiCall('/api/game/intent', { to, clientId }).catch((err) => setError(err.message));
@@ -154,9 +183,19 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 
   const makeMove = useCallback(
     (from: string, to: string, promotion?: string) => {
-      apiCall('/api/game/move', { from, to, promotion, clientId }).catch((err) =>
-        setError(err.message),
-      );
+      setGameState((prev) => {
+        const result = tryMakeMove(prev, from, to, promotion, clientIdRef.current, null);
+        return result.success && result.newState ? result.newState : prev;
+      });
+      apiCall('/api/game/move', { from, to, promotion, clientId }).catch((err) => {
+        setError(err.message);
+        apiCall('/api/game/state')
+          .then((state) => {
+            setGameState(state);
+            syncMySeat(state, clientIdRef.current);
+          })
+          .catch(() => {});
+      });
     },
     [clientId],
   );
@@ -181,6 +220,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         joinSeat,
         leaveSeat,
         selectPiece,
+        selectMindMove,
         setMindIntent: setMindIntentAction,
         makeMove,
         newGame,

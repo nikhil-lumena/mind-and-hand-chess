@@ -11,14 +11,13 @@ const ROLE_META = {
 } as const;
 
 export function Lobby() {
-  const { gameState, myPlayerName, setMyPlayerName, joinSeat, toggleSyncMode, error, clearError } = useGame();
+  const { gameState, myPlayerName, joinSeat, toggleSyncMode, error, clearError } = useGame();
   const [nameInput, setNameInput] = useState(myPlayerName);
 
   const handleJoin = (seatId: SeatId) => {
     const name = nameInput.trim();
     if (!name) return;
-    setMyPlayerName(name);
-    joinSeat(seatId);
+    joinSeat(seatId, name);
   };
 
   const filled = SEAT_IDS.filter((s) => gameState.seats[s].playerName !== null).length;
@@ -91,7 +90,7 @@ export function Lobby() {
           <div className={styles.syncText}>
             <strong>Sync Mode</strong>
             <span className={styles.syncDesc}>
-              The Mind secretly picks a destination too. After the Hand moves, see whether you were thinking alike.
+              The Mind secretly drags a full move too. After the Hand moves, see whether you were thinking alike.
             </span>
           </div>
           <button

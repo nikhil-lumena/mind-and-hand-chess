@@ -38,7 +38,7 @@ export function TurnBanner() {
   const isMyTurn = mySeatId === activeSeatId;
 
   const steps: Step[] = [
-    { phase: 'mind-selecting', icon: '🧠', label: 'Mind picks a piece' },
+    { phase: 'mind-selecting', icon: '🧠', label: gameState.syncMode ? 'Mind chooses a move' : 'Mind picks a piece' },
     ...(gameState.syncMode ? [{ phase: 'mind-intent' as GamePhase, icon: '🎯', label: 'Mind sets intent' }] : []),
     { phase: 'hand-moving', icon: '🤚', label: 'Hand moves' },
   ];

@@ -1,4 +1,4 @@
-import { getRedis } from './redis';
+import { getRedis, hasRedisConfig } from './redis';
 import { getPusher, GAME_CHANNEL } from './pusher-server';
 import type { GameState, MindIntent } from '@/shared/types';
 import { createInitialState } from '@/shared/gameEngine';
@@ -6,7 +6,29 @@ import { createInitialState } from '@/shared/gameEngine';
 const STATE_KEY = 'game:state';
 const MIND_INTENT_KEY = 'game:mind-intent';
 
+type MemoryStore = {
+  state: GameState;
+  intent: MindIntent | null;
+};
+
+const globalForStore = globalThis as typeof globalThis & {
+  __mindHandStore?: MemoryStore;
+};
+
+function memory(): MemoryStore {
+  if (!globalForStore.__mindHandStore) {
+    globalForStore.__mindHandStore = {
+      state: createInitialState(),
+      intent: null,
+    };
+  }
+  return globalForStore.__mindHandStore;
+}
+
 export async function getGameState(): Promise<GameState> {
+  if (!hasRedisConfig()) {
+    return memory().state;
+  }
   const redis = getRedis();
   const raw = await redis.get<GameState>(STATE_KEY);
   if (!raw) {
@@ -18,16 +40,27 @@ export async function getGameState(): Promise<GameState> {
 }
 
 export async function setGameState(state: GameState): Promise<void> {
+  if (!hasRedisConfig()) {
+    memory().state = state;
+    return;
+  }
   const redis = getRedis();
   await redis.set(STATE_KEY, state);
 }
 
 export async function getMindIntent(): Promise<MindIntent | null> {
+  if (!hasRedisConfig()) {
+    return memory().intent;
+  }
   const redis = getRedis();
   return await redis.get<MindIntent>(MIND_INTENT_KEY);
 }
 
 export async function setMindIntent(intent: MindIntent | null): Promise<void> {
+  if (!hasRedisConfig()) {
+    memory().intent = intent;
+    return;
+  }
   const redis = getRedis();
   if (intent) {
     await redis.set(MIND_INTENT_KEY, intent);
@@ -37,6 +70,10 @@ export async function setMindIntent(intent: MindIntent | null): Promise<void> {
 }
 
 export async function clearMindIntent(): Promise<void> {
+  if (!hasRedisConfig()) {
+    memory().intent = null;
+    return;
+  }
   const redis = getRedis();
   await redis.del(MIND_INTENT_KEY);
 }
@@ -44,6 +81,7 @@ export async function clearMindIntent(): Promise<void> {
 export async function updateAndBroadcast(state: GameState): Promise<void> {
   await setGameState(state);
   const pusher = getPusher();
+  if (!pusher) return;
   const payload = JSON.stringify(state);
 
   if (payload.length <= 10240) {

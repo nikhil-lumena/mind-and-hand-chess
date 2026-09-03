@@ -14,6 +14,9 @@ export async function POST(req: NextRequest) {
     }
 
     const pusher = getPusher();
+    if (!pusher) {
+      return NextResponse.json({ error: 'Pusher is not configured' }, { status: 503 });
+    }
 
     const presenceData = {
       user_id: clientId,
