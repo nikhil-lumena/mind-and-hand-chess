@@ -41,9 +41,15 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
 
     const key = process.env.NEXT_PUBLIC_PUSHER_KEY;
     const cluster = process.env.NEXT_PUBLIC_PUSHER_CLUSTER;
+    const usable =
+      !!key &&
+      !!cluster &&
+      key !== '[SENSITIVE]' &&
+      !key.startsWith('your-') &&
+      cluster !== '[SENSITIVE]';
 
-    if (!key || !cluster) {
-      console.error('Missing NEXT_PUBLIC_PUSHER_KEY or NEXT_PUBLIC_PUSHER_CLUSTER');
+    if (!usable) {
+      console.warn('Pusher is not configured; falling back to state polling');
       return;
     }
 

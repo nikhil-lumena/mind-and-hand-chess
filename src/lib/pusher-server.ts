@@ -1,21 +1,27 @@
 import Pusher from 'pusher';
+import { isUsableEnv } from './redis';
 
 let pusher: Pusher | null = null;
 
-export function getPusher(): Pusher {
+export function hasPusherConfig(): boolean {
+  return (
+    isUsableEnv(process.env.PUSHER_APP_ID) &&
+    isUsableEnv(process.env.NEXT_PUBLIC_PUSHER_KEY) &&
+    isUsableEnv(process.env.PUSHER_SECRET) &&
+    isUsableEnv(process.env.NEXT_PUBLIC_PUSHER_CLUSTER)
+  );
+}
+
+export function getPusher(): Pusher | null {
+  if (!hasPusherConfig()) return null;
   if (!pusher) {
-    const appId = process.env.PUSHER_APP_ID;
-    const key = process.env.NEXT_PUBLIC_PUSHER_KEY;
-    const secret = process.env.PUSHER_SECRET;
-    const cluster = process.env.NEXT_PUBLIC_PUSHER_CLUSTER;
-
-    if (!appId || !key || !secret || !cluster) {
-      throw new Error(
-        'Missing Pusher env vars: PUSHER_APP_ID, NEXT_PUBLIC_PUSHER_KEY, PUSHER_SECRET, NEXT_PUBLIC_PUSHER_CLUSTER',
-      );
-    }
-
-    pusher = new Pusher({ appId, key, secret, cluster, useTLS: true });
+    pusher = new Pusher({
+      appId: process.env.PUSHER_APP_ID!,
+      key: process.env.NEXT_PUBLIC_PUSHER_KEY!,
+      secret: process.env.PUSHER_SECRET!,
+      cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!,
+      useTLS: true,
+    });
   }
   return pusher;
 }

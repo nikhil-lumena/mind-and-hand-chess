@@ -11,14 +11,13 @@ const ROLE_ICONS: Record<string, string> = {
 };
 
 export function Lobby() {
-  const { gameState, myPlayerName, setMyPlayerName, joinSeat, toggleSyncMode, error, clearError } = useGame();
+  const { gameState, myPlayerName, joinSeat, toggleSyncMode, error, clearError } = useGame();
   const [nameInput, setNameInput] = useState(myPlayerName);
 
   const handleJoin = (seatId: SeatId) => {
     const name = nameInput.trim();
     if (!name) return;
-    setMyPlayerName(name);
-    joinSeat(seatId);
+    joinSeat(seatId, name);
   };
 
   const whiteSeats = SEAT_IDS.filter((s) => seatTeam(s) === 'white');
