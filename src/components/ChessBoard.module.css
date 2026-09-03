@@ -1,6 +1,12 @@
 .boardContainer {
   position: relative;
-  width: 560px;
-  height: 560px;
-  flex-shrink: 0;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  padding: 8px;
+  border-radius: 16px;
+  background: linear-gradient(160deg, #3a2a1c, #1f1610);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    var(--shadow-lg),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }

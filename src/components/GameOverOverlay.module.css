@@ -1,10 +1,13 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.65);
+  background: rgba(6, 9, 18, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 20px;
   z-index: 100;
   animation: fadeIn 0.3s ease;
 }
@@ -15,49 +18,166 @@
 }
 
 .dialog {
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: 20px;
-  padding: 40px 56px;
+  position: relative;
+  width: min(440px, 100%);
+  background: var(--bg-card-solid);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xl);
+  padding: 40px 36px 32px;
   text-align: center;
   box-shadow: var(--shadow-lg);
-  animation: slideUp 0.3s ease;
+  animation: slideUp 0.4s var(--ease-out);
+  overflow: hidden;
+}
+
+.dialog::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(400px 200px at 50% -20%, rgba(255, 255, 255, 0.08), transparent 70%);
+  pointer-events: none;
+}
+
+.dialogWin::before {
+  background: radial-gradient(420px 240px at 50% -20%, rgba(245, 196, 81, 0.28), transparent 70%);
 }
 
 @keyframes slideUp {
-  from { transform: translateY(24px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from { transform: translateY(28px) scale(0.96); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
 }
 
 .icon {
-  font-size: 4rem;
-  margin-bottom: 12px;
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 3rem;
+  line-height: 1;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+}
+
+.iconWin {
+  background: linear-gradient(150deg, var(--accent-gold), var(--accent-gold-deep));
+  color: var(--text-inverse);
+  border-color: transparent;
+  box-shadow: 0 12px 34px -8px rgba(245, 196, 81, 0.7);
+  animation: trophy 0.7s var(--ease-spring) both;
+}
+
+@keyframes trophy {
+  0% { transform: scale(0.4) rotate(-12deg); }
+  70% { transform: scale(1.1) rotate(3deg); }
+  100% { transform: scale(1) rotate(0); }
 }
 
 .title {
-  font-size: 1.8rem;
+  font-size: 2rem;
   font-weight: 700;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .subtitle {
   color: var(--text-secondary);
   font-size: 1rem;
-  margin-bottom: 28px;
+  margin-bottom: 26px;
+}
+
+.syncSummary {
+  margin-bottom: 26px;
+  padding: 14px;
+  border-radius: var(--radius-lg);
+  background: rgba(167, 139, 250, 0.08);
+  border: 1px solid rgba(167, 139, 250, 0.25);
+}
+
+.syncSummaryTitle {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  color: var(--accent-violet);
+  margin-bottom: 12px;
+}
+
+.syncStats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.syncStat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px;
+  border-radius: var(--radius-md);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.syncStatTeam {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.syncStatValue {
+  font-family: var(--font-display, var(--font-sans-fallback));
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.syncStatDetail {
+  font-size: 0.7rem;
+  font-family: var(--font-mono, var(--font-mono-fallback));
+  color: var(--text-muted);
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .newGameBtn {
-  padding: 12px 36px;
-  border-radius: 10px;
+  padding: 13px 36px;
+  border-radius: var(--radius-md);
   border: none;
-  background: linear-gradient(135deg, var(--accent-gold), #e6a800);
-  color: #1a1a2e;
+  background: linear-gradient(160deg, var(--accent-gold), var(--accent-gold-deep));
+  color: var(--text-inverse);
   font-size: 1rem;
   font-weight: 700;
-  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 10px 24px -8px rgba(245, 196, 81, 0.7);
+  transition: transform 0.15s var(--ease-out), box-shadow 0.15s;
 }
 
 .newGameBtn:hover {
-  transform: scale(1.04);
-  box-shadow: 0 4px 20px rgba(240, 192, 64, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px -8px rgba(245, 196, 81, 0.85);
+}
+
+.newGameBtn:active {
+  transform: translateY(0);
+}
+
+.secondaryBtn {
+  padding: 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: background 0.15s, color 0.15s;
+}
+
+.secondaryBtn:hover {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
 }

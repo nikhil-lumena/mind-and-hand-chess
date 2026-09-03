@@ -2,13 +2,16 @@
 
 import { RealtimeProvider } from '@/context/RealtimeContext';
 import { GameProvider } from '@/context/GameContext';
+import { SoundProvider } from '@/context/SoundContext';
 import { GameContainer } from '@/components/GameContainer';
 
 export default function Home() {
   return (
     <RealtimeProvider>
       <GameProvider>
-        <GameContainer />
+        <SoundProvider>
+          <GameContainer />
+        </SoundProvider>
       </GameProvider>
     </RealtimeProvider>
   );

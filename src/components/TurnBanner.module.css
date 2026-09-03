@@ -1,77 +1,225 @@
 .banner {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   gap: 16px;
-  padding: 12px 24px;
-  border-radius: 12px;
+  padding: 10px 12px 10px 14px;
+  border-radius: var(--radius-lg);
   font-size: 0.9rem;
   font-weight: 500;
   border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: var(--shadow-md);
   width: 100%;
-  max-width: 680px;
+  max-width: 820px;
   flex-wrap: wrap;
+  transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 .waiting {
-  background: rgba(255, 255, 255, 0.04);
+  justify-content: center;
   color: var(--text-secondary);
+  padding: 14px 20px;
+}
+
+.waitingDots {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.waitingDots i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-gold);
+  animation: bounce 1.2s ease-in-out infinite;
+}
+
+.waitingDots i:nth-child(2) { animation-delay: 0.15s; }
+.waitingDots i:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+  30% { transform: translateY(-4px); opacity: 1; }
+}
+
+.waitingCount {
+  font-family: var(--font-mono, var(--font-mono-fallback));
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--bg-elevated);
 }
 
 .whiteTurn {
-  background: rgba(245, 230, 208, 0.1);
-  border-color: rgba(245, 230, 208, 0.2);
+  --turn-tint: 243, 233, 214;
 }
 
 .blackTurn {
-  background: rgba(100, 100, 140, 0.15);
-  border-color: rgba(100, 100, 140, 0.25);
+  --turn-tint: 150, 160, 205;
 }
 
 .myTurn {
-  border-color: rgba(240, 192, 64, 0.5);
-  box-shadow: 0 0 16px rgba(240, 192, 64, 0.15);
+  border-color: rgba(245, 196, 81, 0.5);
+  box-shadow: var(--glow-gold), var(--shadow-md);
 }
 
 .teamBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px 6px 8px;
+  border-radius: 999px;
   font-weight: 700;
-  font-size: 0.85rem;
-  letter-spacing: 0.05em;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgb(var(--turn-tint));
+  background: rgba(var(--turn-tint), 0.12);
+  border: 1px solid rgba(var(--turn-tint), 0.2);
+  flex-shrink: 0;
 }
 
-.phaseText {
+.teamGlyph {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.steps {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  list-style: none;
+  flex: 1;
+  justify-content: center;
+  min-width: 0;
+}
+
+.step {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  position: relative;
+  transition: color 0.25s, background 0.25s;
+  white-space: nowrap;
+}
+
+.step + .step::before {
+  content: '';
+  width: 14px;
+  height: 1px;
+  background: var(--border-strong);
+  margin-right: 4px;
+}
+
+.stepIcon {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  background: var(--bg-elevated);
+  filter: grayscale(1) opacity(0.6);
+  transition: filter 0.25s, background 0.25s, transform 0.25s var(--ease-spring);
+}
+
+.stepDone {
   color: var(--text-secondary);
 }
 
-.playerText {
+.stepDone .stepIcon {
+  filter: none;
+  color: var(--accent-green);
+  background: rgba(52, 211, 153, 0.15);
+  font-weight: 800;
+}
+
+.stepActive {
+  color: var(--text-primary);
+  background: rgba(245, 196, 81, 0.12);
   font-weight: 600;
-  display: flex;
+}
+
+.stepActive .stepIcon {
+  filter: none;
+  background: rgba(245, 196, 81, 0.2);
+  transform: scale(1.1);
+  box-shadow: 0 0 12px rgba(245, 196, 81, 0.35);
+}
+
+.playerText {
+  display: inline-flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
+}
+
+.playerName {
+  font-weight: 600;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .youTag {
-  background: var(--accent-gold);
-  color: #1a1a2e;
-  font-size: 0.65rem;
+  background: linear-gradient(160deg, var(--accent-gold), var(--accent-gold-deep));
+  color: var(--text-inverse);
+  font-size: 0.66rem;
   font-weight: 800;
-  padding: 2px 8px;
-  border-radius: 4px;
+  padding: 4px 9px;
+  border-radius: 999px;
   letter-spacing: 0.08em;
+  text-transform: uppercase;
+  animation: pulseGold 1.6s ease-in-out infinite;
+}
+
+@keyframes pulseGold {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(245, 196, 81, 0.5); }
+  50% { box-shadow: 0 0 0 5px rgba(245, 196, 81, 0); }
 }
 
 .checkBadge {
   background: var(--accent-red);
   color: white;
-  font-size: 0.7rem;
+  font-size: 0.66rem;
   font-weight: 800;
-  padding: 3px 10px;
-  border-radius: 4px;
-  letter-spacing: 0.06em;
+  padding: 4px 9px;
+  border-radius: 999px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   animation: pulse 1s ease-in-out infinite;
 }
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+  50% { opacity: 0.65; }
+}
+
+@media (max-width: 720px) {
+  .banner {
+    justify-content: center;
+  }
+
+  .steps {
+    order: 3;
+    flex-basis: 100%;
+    justify-content: center;
+  }
+
+  .stepLabel {
+    display: none;
+  }
+
+  .stepActive .stepLabel {
+    display: inline;
+  }
 }

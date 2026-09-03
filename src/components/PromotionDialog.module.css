@@ -1,53 +1,115 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(6, 9, 18, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 20px;
   z-index: 100;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .dialog {
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: 16px;
-  padding: 24px 32px;
+  background: var(--bg-card-solid);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xl);
+  padding: 26px 28px 22px;
   box-shadow: var(--shadow-lg);
   text-align: center;
+  animation: pop 0.3s var(--ease-spring);
+}
+
+@keyframes pop {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 
 .title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 16px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.hint {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin-bottom: 18px;
 }
 
 .options {
   display: flex;
-  gap: 12px;
+  gap: 10px;
+  margin-bottom: 16px;
 }
 
 .option {
-  width: 64px;
-  height: 64px;
-  border-radius: 12px;
-  border: 2px solid var(--border-subtle);
-  background: rgba(255, 255, 255, 0.06);
+  width: 82px;
+  padding: 12px 6px 10px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  transition: all 0.15s;
+  gap: 6px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-elevated);
+  transition: border-color 0.15s, background 0.15s, transform 0.15s var(--ease-out), box-shadow 0.15s;
 }
 
-.option:hover {
+.option:hover,
+.option:focus-visible {
   border-color: var(--accent-gold);
-  background: rgba(240, 192, 64, 0.15);
-  transform: scale(1.08);
+  background: rgba(245, 196, 81, 0.12);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px -10px rgba(245, 196, 81, 0.6);
 }
 
 .pieceIcon {
-  font-size: 40px;
+  font-size: 42px;
   line-height: 1;
-  filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+.whitePiece {
+  color: #fff;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.5));
+}
+
+.blackPiece {
+  color: #1a1a1a;
+  filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.85)) drop-shadow(0 2px 3px rgba(0, 0, 0, 0.5));
+}
+
+.pieceLabel {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.cancelBtn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  transition: color 0.15s, background 0.15s;
+}
+
+.cancelBtn:hover {
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+}
+
+@media (max-width: 420px) {
+  .options {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
 }
