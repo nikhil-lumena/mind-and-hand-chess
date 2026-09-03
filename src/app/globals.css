@@ -1,24 +1,50 @@
 :root {
-  --bg-primary: #1a1a2e;
-  --bg-secondary: #16213e;
-  --bg-card: #1e2a45;
-  --bg-card-hover: #253352;
-  --text-primary: #e8e8f0;
-  --text-secondary: #9ba3b5;
-  --text-muted: #6b7280;
-  --accent-gold: #f0c040;
-  --accent-blue: #4e8cff;
+  color-scheme: dark;
+
+  --bg-0: #0b0f1a;
+  --bg-1: #10162a;
+  --bg-2: #161d33;
+  --bg-card: rgba(20, 27, 48, 0.78);
+  --bg-card-solid: #141b30;
+  --bg-elevated: rgba(255, 255, 255, 0.04);
+  --bg-elevated-hover: rgba(255, 255, 255, 0.07);
+
+  --text-primary: #eef1f8;
+  --text-secondary: #a4adc3;
+  --text-muted: #6d778d;
+  --text-inverse: #0b0f1a;
+
+  --accent-gold: #f5c451;
+  --accent-gold-deep: #e0a52a;
+  --accent-blue: #5b9dff;
+  --accent-violet: #a78bfa;
   --accent-green: #34d399;
   --accent-red: #f87171;
-  --white-team: #f5e6d0;
-  --black-team: #3d3d5c;
-  --board-light: #ecd5b5;
-  --board-dark: #b08968;
-  --highlight-selected: rgba(240, 192, 64, 0.55);
-  --highlight-legal: rgba(78, 140, 255, 0.45);
-  --highlight-check: rgba(248, 113, 113, 0.6);
+
+  --white-team: #f3e9d6;
+  --black-team: #b7bdd6;
+
+  --board-light: #edd9b9;
+  --board-dark: #a9784f;
+
   --border-subtle: rgba(255, 255, 255, 0.08);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --border-strong: rgba(255, 255, 255, 0.16);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 24px 64px -16px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+  --glow-gold: 0 0 0 1px rgba(245, 196, 81, 0.35), 0 0 28px rgba(245, 196, 81, 0.18);
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --font-sans-fallback: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono-fallback: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 }
 
 * {
@@ -27,24 +53,94 @@
   box-sizing: border-box;
 }
 
-html, body {
+html {
   height: 100%;
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
 body {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-  min-height: 100vh;
+  min-height: 100%;
+  font-family: var(--font-sans, var(--font-sans-fallback));
+  color: var(--text-primary);
+  background-color: var(--bg-0);
+  background-image:
+    radial-gradient(1100px 600px at 8% -10%, rgba(245, 196, 81, 0.16), transparent 60%),
+    radial-gradient(900px 600px at 100% 110%, rgba(91, 157, 255, 0.18), transparent 60%),
+    radial-gradient(700px 500px at 60% 40%, rgba(167, 139, 250, 0.08), transparent 65%),
+    linear-gradient(180deg, var(--bg-1) 0%, var(--bg-0) 100%);
+  background-attachment: fixed;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Subtle dot grid that fades toward the edges. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.9) 0%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.9) 0%, transparent 75%);
+  z-index: 0;
+}
+
+body > * {
+  position: relative;
+  z-index: 1;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display, var(--font-sans, var(--font-sans-fallback)));
+  letter-spacing: -0.015em;
 }
 
 button {
   cursor: pointer;
   font-family: inherit;
+  color: inherit;
 }
 
 input {
   font-family: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+::selection {
+  background: rgba(245, 196, 81, 0.35);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

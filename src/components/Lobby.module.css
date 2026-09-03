@@ -1,239 +1,474 @@
 .lobby {
   width: 100%;
-  max-width: 680px;
+  max-width: 720px;
+  animation: rise 0.45s var(--ease-out) both;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .card {
+  position: relative;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
-  border-radius: 16px;
-  padding: 40px;
+  border-radius: var(--radius-xl);
+  padding: clamp(24px, 4vw, 44px);
   box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  overflow: hidden;
+}
+
+/* Soft top highlight line */
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+}
+
+.cardHeader {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.eyebrow {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent-gold);
+  margin-bottom: 10px;
 }
 
 .heading {
-  font-size: 1.6rem;
+  font-size: clamp(1.6rem, 4vw, 2.1rem);
   font-weight: 700;
   margin-bottom: 8px;
-  text-align: center;
 }
 
 .description {
-  text-align: center;
   color: var(--text-secondary);
-  font-size: 0.9rem;
-  margin-bottom: 24px;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  max-width: 440px;
+  margin: 0 auto;
 }
 
 .nameRow {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
   margin-bottom: 20px;
 }
 
+.nameLabel {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.nameField {
+  position: relative;
+  width: min(320px, 100%);
+}
+
 .nameInput {
-  width: 260px;
-  padding: 10px 16px;
-  border-radius: 8px;
-  border: 1px solid var(--border-subtle);
-  background: rgba(255, 255, 255, 0.06);
+  width: 100%;
+  padding: 12px 58px 12px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-strong);
+  background: rgba(0, 0, 0, 0.25);
   color: var(--text-primary);
-  font-size: 0.95rem;
+  font-size: 1rem;
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.nameInput::placeholder {
+  color: var(--text-muted);
+}
+
+.nameInput:hover {
+  border-color: rgba(255, 255, 255, 0.24);
 }
 
 .nameInput:focus {
-  border-color: var(--accent-blue);
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 0 3px rgba(245, 196, 81, 0.2);
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.nameCount {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.7rem;
+  font-family: var(--font-mono, var(--font-mono-fallback));
+  color: var(--text-muted);
+  pointer-events: none;
 }
 
 .error {
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
   color: var(--accent-red);
   font-size: 0.85rem;
   margin-bottom: 16px;
-  cursor: pointer;
-  padding: 8px;
+  padding: 10px 14px;
   background: rgba(248, 113, 113, 0.1);
-  border-radius: 8px;
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  border-radius: var(--radius-md);
+  text-align: left;
+}
+
+.errorDismiss {
+  margin-left: auto;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.7;
+}
+
+.seatProgress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.seatDots {
+  display: flex;
+  gap: 6px;
+}
+
+.seatDot {
+  width: 22px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+.seatDotFilled {
+  background: var(--accent-green);
+  box-shadow: 0 0 10px rgba(52, 211, 153, 0.5);
+}
+
+.seatProgressText {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  font-weight: 500;
 }
 
 .teamsRow {
   display: flex;
-  align-items: flex-start;
-  gap: 16px;
+  align-items: stretch;
+  gap: 14px;
   justify-content: center;
 }
 
 .vs {
-  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display, var(--font-sans-fallback));
+  font-size: 0.85rem;
   font-weight: 800;
+  letter-spacing: 0.1em;
   color: var(--text-muted);
-  align-self: center;
-  padding-top: 36px;
+  flex-shrink: 0;
+  width: 40px;
+}
+
+.vs span {
+  padding: 6px 0;
 }
 
 .teamColumn {
   flex: 1;
-  max-width: 260px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  background: rgba(0, 0, 0, 0.14);
+}
+
+.whiteTeam {
+  --team-tint: 243, 233, 214;
+}
+
+.blackTeam {
+  --team-tint: 150, 160, 205;
 }
 
 .teamLabel {
-  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.8rem;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-weight: 600;
-  margin-bottom: 12px;
-  text-align: center;
-  padding: 6px;
-  border-radius: 6px;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  margin-bottom: 4px;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  color: rgb(var(--team-tint));
+  background: rgba(var(--team-tint), 0.1);
 }
 
-.whiteTeam .teamLabel {
-  color: #f5e6d0;
-  background: rgba(245, 230, 208, 0.1);
-}
-
-.blackTeam .teamLabel {
-  color: #b8b8d0;
-  background: rgba(61, 61, 92, 0.3);
+.teamGlyph {
+  font-size: 1.1rem;
+  line-height: 1;
 }
 
 .seatCard {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 12px 14px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.03);
+  gap: 12px;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  background: var(--bg-elevated);
   border: 1px solid var(--border-subtle);
-  margin-bottom: 8px;
-  transition: background 0.2s;
+  transition: background 0.2s, border-color 0.2s, transform 0.2s var(--ease-out), box-shadow 0.2s;
 }
 
 .seatCard:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--bg-elevated-hover);
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 
 .seatOccupied {
-  border-color: rgba(52, 211, 153, 0.25);
-  background: rgba(52, 211, 153, 0.06);
+  border-color: rgba(52, 211, 153, 0.3);
+  background: rgba(52, 211, 153, 0.07);
+}
+
+.seatOccupied:hover {
+  transform: none;
+  box-shadow: none;
+  background: rgba(52, 211, 153, 0.09);
+}
+
+.roleTile {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  font-size: 1.25rem;
+  background: rgba(var(--team-tint), 0.1);
+  border: 1px solid rgba(var(--team-tint), 0.15);
 }
 
 .seatInfo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.roleIcon {
-  font-size: 1.3rem;
+  flex: 1;
+  min-width: 0;
 }
 
 .roleName {
-  font-size: 0.8rem;
+  font-size: 0.86rem;
   font-weight: 600;
   color: var(--text-primary);
 }
 
 .playerName {
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   color: var(--text-secondary);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.openSeat {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.takenBadge {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--accent-green);
+  background: rgba(52, 211, 153, 0.15);
 }
 
 .joinBtn {
-  padding: 6px 16px;
-  border-radius: 6px;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
   border: none;
-  background: var(--accent-blue);
-  color: white;
+  background: linear-gradient(160deg, var(--accent-gold), var(--accent-gold-deep));
+  color: var(--text-inverse);
   font-size: 0.8rem;
-  font-weight: 600;
-  transition: background 0.15s, opacity 0.15s;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 14px -6px rgba(245, 196, 81, 0.7);
+  transition: transform 0.15s var(--ease-out), box-shadow 0.15s, opacity 0.15s;
 }
 
 .joinBtn:hover:not(:disabled) {
-  background: #3a7ae8;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px -6px rgba(245, 196, 81, 0.8);
+}
+
+.joinBtn:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .joinBtn:disabled {
-  opacity: 0.4;
+  opacity: 0.35;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
-.syncToggleRow {
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid var(--border-subtle);
-}
-
-.syncToggleLabel {
+.syncCard {
   display: flex;
   align-items: center;
-  gap: 12px;
-  cursor: pointer;
+  gap: 14px;
+  margin-top: 22px;
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(167, 139, 250, 0.1), rgba(91, 157, 255, 0.06));
+  border: 1px solid rgba(167, 139, 250, 0.25);
 }
 
-.syncToggleIcon {
-  font-size: 1.3rem;
+.syncIcon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  font-size: 1.2rem;
+  background: rgba(167, 139, 250, 0.15);
 }
 
-.syncToggleText {
+.syncText {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 }
 
-.syncToggleText strong {
-  font-size: 0.9rem;
+.syncText strong {
+  font-size: 0.92rem;
   color: var(--text-primary);
 }
 
-.syncToggleDesc {
-  font-size: 0.75rem;
+.syncDesc {
+  font-size: 0.78rem;
+  line-height: 1.45;
   color: var(--text-secondary);
 }
 
-.syncToggleBtn {
+.toggle {
   position: relative;
-  width: 44px;
-  height: 24px;
-  border-radius: 12px;
+  width: 48px;
+  height: 26px;
+  border-radius: 999px;
   border: none;
-  background: rgba(255, 255, 255, 0.12);
-  cursor: pointer;
-  transition: background 0.2s;
+  background: rgba(255, 255, 255, 0.14);
+  transition: background 0.25s;
   flex-shrink: 0;
 }
 
-.syncToggleBtn:disabled {
+.toggle:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
-.syncToggleBtnOn {
-  background: var(--accent-green);
+.toggleOn {
+  background: linear-gradient(135deg, var(--accent-violet), var(--accent-blue));
+  box-shadow: 0 0 14px rgba(167, 139, 250, 0.45);
 }
 
-.syncToggleKnob {
+.toggleKnob {
   position: absolute;
   top: 3px;
   left: 3px;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   background: white;
-  transition: transform 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  transition: transform 0.25s var(--ease-spring);
 }
 
-.syncToggleBtnOn .syncToggleKnob {
-  transform: translateX(20px);
+.toggleOn .toggleKnob {
+  transform: translateX(22px);
 }
 
 .statusNote {
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   color: var(--accent-gold);
   font-size: 0.85rem;
-  margin-top: 20px;
+  font-weight: 500;
+  margin-top: 18px;
+  padding: 10px;
+  border-radius: var(--radius-md);
+  background: rgba(245, 196, 81, 0.08);
+}
+
+@media (max-width: 600px) {
+  .teamsRow {
+    flex-direction: column;
+  }
+
+  .vs {
+    width: auto;
+    height: 20px;
+    position: relative;
+  }
+
+  .vs::before,
+  .vs::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-subtle);
+  }
+
+  .vs span {
+    padding: 0 12px;
+  }
+
+  .syncCard {
+    flex-wrap: wrap;
+  }
+
+  .syncText {
+    flex-basis: calc(100% - 54px);
+  }
+
+  .toggle {
+    margin-left: auto;
+  }
 }

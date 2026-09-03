@@ -20,6 +20,8 @@ interface GameContextValue {
   toggleSyncMode: (enabled: boolean) => void;
   error: string | null;
   clearError: () => void;
+  /** True once the first server state has been received (or the fetch failed). */
+  hydrated: boolean;
 }
 
 const GameContext = createContext<GameContextValue | null>(null);
@@ -49,6 +51,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   const [mySeatId, setMySeatId] = useState<SeatId | null>(null);
   const [myPlayerName, setMyPlayerName] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [hydrated, setHydrated] = useState(false);
   const clientIdRef = useRef(clientId);
   clientIdRef.current = clientId;
   const chunksRef = useRef<Map<string, string[]>>(new Map());
@@ -62,7 +65,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         })
         .catch(() => {});
 
-    loadState();
+    loadState().finally(() => setHydrated(true));
     if (channel) return;
 
     const interval = setInterval(loadState, 400);
@@ -224,6 +227,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         toggleSyncMode,
         error,
         clearError,
+        hydrated,
       }}
     >
       {children}

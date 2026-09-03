@@ -9,7 +9,8 @@ import { seatRole, seatTeam } from '@/shared/types';
 import { PromotionDialog } from './PromotionDialog';
 import styles from './ChessBoard.module.css';
 
-const BOARD_WIDTH = 560;
+const BOARD_LIGHT = '#edd9b9';
+const BOARD_DARK = '#a9784f';
 
 export function ChessBoard() {
   const { gameState, mySeatId, selectPiece, selectMindMove, setMindIntent, makeMove } = useGame();
@@ -115,8 +116,8 @@ export function ChessBoard() {
     const s: Record<string, React.CSSProperties> = {};
 
     if (lastMove) {
-      s[lastMove.from] = { background: 'rgba(255, 255, 0, 0.25)' };
-      s[lastMove.to] = { background: 'rgba(255, 255, 0, 0.35)' };
+      s[lastMove.from] = { background: 'rgba(245, 196, 81, 0.28)' };
+      s[lastMove.to] = { background: 'rgba(245, 196, 81, 0.42)' };
     }
 
     if (kingInCheckSquare) {
@@ -130,17 +131,14 @@ export function ChessBoard() {
     if (highlightSquare) {
       s[highlightSquare] = {
         ...s[highlightSquare],
-        background: 'rgba(240, 192, 64, 0.65)',
+        background: 'rgba(245, 196, 81, 0.7)',
+        boxShadow: 'inset 0 0 0 3px rgba(255, 228, 150, 0.9)',
       };
     }
 
     if (isMindTurn) {
       for (const sq of selectableSquares) {
-        if (!s[sq]) {
-          s[sq] = { boxShadow: 'inset 0 0 0 3px rgba(240, 192, 64, 0.6)' };
-        } else {
-          s[sq] = { ...s[sq], boxShadow: 'inset 0 0 0 3px rgba(240, 192, 64, 0.6)' };
-        }
+        s[sq] = { ...(s[sq] || {}), boxShadow: 'inset 0 0 0 3px rgba(245, 196, 81, 0.75)' };
       }
     }
 
@@ -174,13 +172,13 @@ export function ChessBoard() {
           s[sq] = {
             ...existingStyle,
             background: existingStyle.background || undefined,
-            boxShadow: 'inset 0 0 0 4px rgba(78, 140, 255, 0.6)',
+            boxShadow: 'inset 0 0 0 4px rgba(91, 157, 255, 0.65)',
             borderRadius: '50%',
           };
         } else {
           s[sq] = {
             ...existingStyle,
-            background: 'radial-gradient(circle, rgba(78, 140, 255, 0.45) 24%, transparent 25%)',
+            background: 'radial-gradient(circle, rgba(91, 157, 255, 0.5) 24%, transparent 25%)',
           };
         }
       }
@@ -404,14 +402,13 @@ export function ChessBoard() {
           arrows: syncArrows,
           allowDrawingArrows: false,
           boardStyle: {
-            borderRadius: '4px',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
-            width: `${BOARD_WIDTH}px`,
-            height: `${BOARD_WIDTH}px`,
+            borderRadius: '10px',
+            width: '100%',
+            height: 'auto',
           },
-          darkSquareStyle: { backgroundColor: '#b08968' },
-          lightSquareStyle: { backgroundColor: '#ecd5b5' },
-          dropSquareStyle: { boxShadow: 'inset 0 0 1px 6px rgba(78, 140, 255, 0.5)' },
+          darkSquareStyle: { backgroundColor: BOARD_DARK },
+          lightSquareStyle: { backgroundColor: BOARD_LIGHT },
+          dropSquareStyle: { boxShadow: 'inset 0 0 1px 6px rgba(91, 157, 255, 0.55)' },
         }}
       />
       {promotionPending && (
