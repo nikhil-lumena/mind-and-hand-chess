@@ -1,41 +1,19 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
+import { Chessboard } from 'react-chessboard';
+import type { PieceDropHandlerArgs, PieceHandlerArgs, SquareHandlerArgs } from 'react-chessboard';
 import { useGame } from '@/context/GameContext';
 import { getSelectablePieces, getLegalMovesForSquare, needsPromotion } from '@/shared/gameEngine';
 import { seatRole, seatTeam } from '@/shared/types';
 import { PromotionDialog } from './PromotionDialog';
 import styles from './ChessBoard.module.css';
 
-const PIECE_UNICODE: Record<string, string> = {
-  K: '\u2654', Q: '\u2655', R: '\u2656', B: '\u2657', N: '\u2658', P: '\u2659',
-  k: '\u265A', q: '\u265B', r: '\u265C', b: '\u265D', n: '\u265E', p: '\u265F',
-};
-
-function fenToBoard(fen: string): (string | null)[][] {
-  const rows = fen.split(' ')[0].split('/');
-  return rows.map((row) => {
-    const cells: (string | null)[] = [];
-    for (const ch of row) {
-      if (ch >= '1' && ch <= '8') {
-        for (let i = 0; i < parseInt(ch); i++) cells.push(null);
-      } else {
-        cells.push(ch);
-      }
-    }
-    return cells;
-  });
-}
-
-function squareName(row: number, col: number): string {
-  return String.fromCharCode(97 + col) + (8 - row);
-}
+const BOARD_WIDTH = 560;
 
 export function ChessBoard() {
   const { gameState, mySeatId, selectPiece, makeMove } = useGame();
   const [promotionPending, setPromotionPending] = useState<{ from: string; to: string } | null>(null);
-
-  const board = useMemo(() => fenToBoard(gameState.fen), [gameState.fen]);
 
   const myRole = mySeatId ? seatRole(mySeatId) : null;
   const myTeam = mySeatId ? seatTeam(mySeatId) : null;
@@ -63,34 +41,176 @@ export function ChessBoard() {
     return new Set(moves.map((m) => m.to));
   }, [isHandTurn, gameState.fen, gameState.selectedSquare]);
 
+  const lastMove = useMemo(() => {
+    if (gameState.moves.length === 0) return null;
+    const last = gameState.moves[gameState.moves.length - 1];
+    return { from: last.from, to: last.to };
+  }, [gameState.moves]);
+
   const kingInCheckSquare = useMemo(() => {
     if (!gameState.isCheck) return null;
-    const turnColor = gameState.turn === 'white' ? 'K' : 'k';
-    for (let r = 0; r < 8; r++) {
-      for (let c = 0; c < 8; c++) {
-        if (board[r][c] === turnColor) return squareName(r, c);
+    const rows = gameState.fen.split(' ')[0].split('/');
+    const kingChar = gameState.turn === 'white' ? 'K' : 'k';
+    for (let r = 0; r < rows.length; r++) {
+      let c = 0;
+      for (const ch of rows[r]) {
+        if (ch >= '1' && ch <= '8') {
+          c += parseInt(ch);
+        } else {
+          if (ch === kingChar) {
+            return String.fromCharCode(97 + c) + (8 - r);
+          }
+          c++;
+        }
       }
     }
     return null;
-  }, [gameState.isCheck, gameState.turn, board]);
+  }, [gameState.isCheck, gameState.turn, gameState.fen]);
 
-  const handleSquareClick = (row: number, col: number) => {
-    const sq = squareName(row, col);
+  const squareStyles = useMemo(() => {
+    const s: Record<string, React.CSSProperties> = {};
 
-    if (isMindTurn && selectableSquares.has(sq)) {
-      selectPiece(sq);
-      return;
+    if (lastMove) {
+      s[lastMove.from] = { background: 'rgba(255, 255, 0, 0.25)' };
+      s[lastMove.to] = { background: 'rgba(255, 255, 0, 0.35)' };
     }
 
-    if (isHandTurn && gameState.selectedSquare && legalTargets.has(sq)) {
-      if (needsPromotion(gameState.fen, gameState.selectedSquare, sq)) {
-        setPromotionPending({ from: gameState.selectedSquare, to: sq });
-      } else {
-        makeMove(gameState.selectedSquare, sq);
+    if (kingInCheckSquare) {
+      s[kingInCheckSquare] = {
+        ...s[kingInCheckSquare],
+        background: 'radial-gradient(ellipse at center, rgba(255, 0, 0, 0.6) 0%, rgba(200, 0, 0, 0.3) 50%, transparent 70%)',
+      };
+    }
+
+    if (gameState.selectedSquare) {
+      s[gameState.selectedSquare] = {
+        ...s[gameState.selectedSquare],
+        background: 'rgba(240, 192, 64, 0.65)',
+      };
+    }
+
+    if (isMindTurn) {
+      for (const sq of selectableSquares) {
+        if (!s[sq]) {
+          s[sq] = { boxShadow: 'inset 0 0 0 3px rgba(240, 192, 64, 0.6)' };
+        } else {
+          s[sq] = { ...s[sq], boxShadow: 'inset 0 0 0 3px rgba(240, 192, 64, 0.6)' };
+        }
       }
-      return;
     }
-  };
+
+    if (isHandTurn && gameState.selectedSquare) {
+      for (const sq of legalTargets) {
+        const existingStyle = s[sq] || {};
+        const fenBoard = gameState.fen.split(' ')[0];
+        const hasPiece = squareHasPiece(sq, fenBoard);
+        if (hasPiece) {
+          s[sq] = {
+            ...existingStyle,
+            background: existingStyle.background || undefined,
+            boxShadow: 'inset 0 0 0 4px rgba(78, 140, 255, 0.6)',
+            borderRadius: '50%',
+          };
+        } else {
+          s[sq] = {
+            ...existingStyle,
+            background: 'radial-gradient(circle, rgba(78, 140, 255, 0.45) 24%, transparent 25%)',
+          };
+        }
+      }
+    }
+
+    return s;
+  }, [lastMove, kingInCheckSquare, gameState.selectedSquare, isMindTurn, isHandTurn, selectableSquares, legalTargets, gameState.fen]);
+
+  const canDragPiece = useCallback(
+    ({ square }: PieceHandlerArgs): boolean => {
+      if (!square) return false;
+
+      if (isMindTurn && selectableSquares.has(square)) {
+        return true;
+      }
+
+      if (isHandTurn && gameState.selectedSquare && square === gameState.selectedSquare) {
+        return true;
+      }
+
+      return false;
+    },
+    [isMindTurn, isHandTurn, selectableSquares, gameState.selectedSquare]
+  );
+
+  const handlePieceDrop = useCallback(
+    ({ sourceSquare, targetSquare }: PieceDropHandlerArgs): boolean => {
+      if (!targetSquare) return false;
+
+      if (isMindTurn) {
+        if (sourceSquare === targetSquare && selectableSquares.has(sourceSquare)) {
+          selectPiece(sourceSquare);
+          return false;
+        }
+        if (selectableSquares.has(sourceSquare)) {
+          selectPiece(sourceSquare);
+        }
+        return false;
+      }
+
+      if (isHandTurn && gameState.selectedSquare) {
+        if (sourceSquare !== gameState.selectedSquare) return false;
+        if (!legalTargets.has(targetSquare)) return false;
+
+        if (needsPromotion(gameState.fen, sourceSquare, targetSquare)) {
+          setPromotionPending({ from: sourceSquare, to: targetSquare });
+          return false;
+        }
+
+        makeMove(sourceSquare, targetSquare);
+        return true;
+      }
+
+      return false;
+    },
+    [isMindTurn, isHandTurn, selectableSquares, legalTargets, gameState.selectedSquare, gameState.fen, selectPiece, makeMove]
+  );
+
+  const handleSquareClick = useCallback(
+    ({ square }: SquareHandlerArgs) => {
+      if (isMindTurn && selectableSquares.has(square)) {
+        selectPiece(square);
+        return;
+      }
+
+      if (isHandTurn && gameState.selectedSquare && legalTargets.has(square)) {
+        if (needsPromotion(gameState.fen, gameState.selectedSquare, square)) {
+          setPromotionPending({ from: gameState.selectedSquare, to: square });
+        } else {
+          makeMove(gameState.selectedSquare, square);
+        }
+        return;
+      }
+    },
+    [isMindTurn, isHandTurn, selectableSquares, legalTargets, gameState.selectedSquare, gameState.fen, selectPiece, makeMove]
+  );
+
+  const handlePieceClick = useCallback(
+    ({ square }: PieceHandlerArgs) => {
+      if (!square) return;
+      if (isMindTurn && selectableSquares.has(square)) {
+        selectPiece(square);
+      }
+    },
+    [isMindTurn, selectableSquares, selectPiece]
+  );
+
+  const handlePieceDrag = useCallback(
+    ({ square }: PieceHandlerArgs) => {
+      if (!square) return;
+      if (isMindTurn && selectableSquares.has(square)) {
+        selectPiece(square);
+      }
+    },
+    [isMindTurn, selectableSquares, selectPiece]
+  );
 
   const handlePromotion = (piece: string) => {
     if (promotionPending) {
@@ -101,70 +221,33 @@ export function ChessBoard() {
 
   const flipBoard = myTeam === 'black';
 
-  const renderBoard = () => {
-    const rows = [];
-    for (let displayRow = 0; displayRow < 8; displayRow++) {
-      const actualRow = flipBoard ? 7 - displayRow : displayRow;
-      const cells = [];
-      for (let displayCol = 0; displayCol < 8; displayCol++) {
-        const actualCol = flipBoard ? 7 - displayCol : displayCol;
-        const sq = squareName(actualRow, actualCol);
-        const piece = board[actualRow][actualCol];
-        const isLight = (actualRow + actualCol) % 2 === 0;
-        const isSelected = gameState.selectedSquare === sq;
-        const isSelectable = selectableSquares.has(sq);
-        const isLegalTarget = legalTargets.has(sq);
-        const isCheckSquare = kingInCheckSquare === sq;
-
-        let cellClass = `${styles.cell} ${isLight ? styles.light : styles.dark}`;
-        if (isSelected) cellClass += ` ${styles.selected}`;
-        if (isCheckSquare) cellClass += ` ${styles.check}`;
-        if (isSelectable) cellClass += ` ${styles.selectable}`;
-        if (isLegalTarget) cellClass += ` ${styles.legalTarget}`;
-
-        const clickable = isSelectable || isLegalTarget;
-
-        cells.push(
-          <div
-            key={sq}
-            className={cellClass}
-            onClick={() => handleSquareClick(actualRow, actualCol)}
-            style={{ cursor: clickable ? 'pointer' : 'default' }}
-          >
-            {displayCol === 0 && (
-              <span className={styles.rankLabel}>{8 - actualRow}</span>
-            )}
-            {displayRow === 7 && (
-              <span className={styles.fileLabel}>
-                {String.fromCharCode(97 + actualCol)}
-              </span>
-            )}
-            {isLegalTarget && !piece && <span className={styles.legalDot} />}
-            {isLegalTarget && piece && <span className={styles.captureRing} />}
-            {piece && (
-              <span
-                className={`${styles.piece} ${
-                  piece === piece.toUpperCase() ? styles.whitePiece : styles.blackPiece
-                }`}
-              >
-                {PIECE_UNICODE[piece]}
-              </span>
-            )}
-          </div>
-        );
-      }
-      rows.push(
-        <div key={displayRow} className={styles.row}>
-          {cells}
-        </div>
-      );
-    }
-    return rows;
-  };
-
   return (
     <div className={styles.boardContainer}>
-      <div className={styles.board}>{renderBoard()}</div>
+      <Chessboard
+        options={{
+          id: 'mind-and-hand',
+          position: gameState.fen,
+          boardOrientation: flipBoard ? 'black' : 'white',
+          allowDragging: true,
+          showNotation: true,
+          animationDurationInMs: 200,
+          canDragPiece,
+          onPieceDrop: handlePieceDrop,
+          onSquareClick: handleSquareClick,
+          onPieceClick: handlePieceClick,
+          onPieceDrag: handlePieceDrag,
+          squareStyles,
+          boardStyle: {
+            borderRadius: '4px',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+            width: `${BOARD_WIDTH}px`,
+            height: `${BOARD_WIDTH}px`,
+          },
+          darkSquareStyle: { backgroundColor: '#b08968' },
+          lightSquareStyle: { backgroundColor: '#ecd5b5' },
+          dropSquareStyle: { boxShadow: 'inset 0 0 1px 6px rgba(78, 140, 255, 0.5)' },
+        }}
+      />
       {promotionPending && (
         <PromotionDialog
           color={gameState.turn}
@@ -174,4 +257,22 @@ export function ChessBoard() {
       )}
     </div>
   );
+}
+
+function squareHasPiece(square: string, fenBoard: string): boolean {
+  const col = square.charCodeAt(0) - 97;
+  const row = 8 - parseInt(square[1]);
+  const rows = fenBoard.split('/');
+  if (row < 0 || row >= rows.length) return false;
+  let c = 0;
+  for (const ch of rows[row]) {
+    if (ch >= '1' && ch <= '8') {
+      c += parseInt(ch);
+    } else {
+      if (c === col) return true;
+      c++;
+    }
+    if (c > col) break;
+  }
+  return false;
 }
