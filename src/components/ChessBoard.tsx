@@ -187,7 +187,7 @@ export function ChessBoard() {
     }
 
     return s;
-  }, [lastMove, kingInCheckSquare, gameState.selectedSquare, dragPreviewSquare, isMindTurn, isMindIntentTurn, isHandTurn, selectableSquares, intentTargets, legalTargets, gameState.fen]);
+  }, [lastMove, kingInCheckSquare, gameState.selectedSquare, dragPreviewSquare, isMindTurn, isHandTurn, selectableSquares, intentTargets, legalTargets, gameState.fen]);
 
   const canDragPiece = useCallback(
     ({ square }: PieceHandlerArgs): boolean => {
@@ -251,7 +251,7 @@ export function ChessBoard() {
         if (!s.selectableSquares.has(sourceSquare)) return false;
 
         if (s.syncMode && sourceSquare !== targetSquare) {
-          const legal = new Set(getLegalMovesForSquare(s.fen, sourceSquare).map((m) => m.to));
+          const legal = new Set<string>(getLegalMovesForSquare(s.fen, sourceSquare).map((m) => m.to));
           if (legal.has(targetSquare)) {
             selectMindMove(sourceSquare, targetSquare);
             return false;

@@ -12,16 +12,22 @@ export async function POST(req: NextRequest) {
     }
 
     const state = await getGameState();
-    const result = to
-      ? trySelectMindMove(state, square, to, clientId)
-      : trySelectPiece(state, square, clientId);
 
-    if (!result.success) {
-      return NextResponse.json({ error: result.error }, { status: 400 });
+    if (to) {
+      const result = trySelectMindMove(state, square, to, clientId);
+      if (!result.success) {
+        return NextResponse.json({ error: result.error }, { status: 400 });
+      }
+      if (result.mindIntent) {
+        await setMindIntent(result.mindIntent);
+      }
+      await updateAndBroadcast(result.newState!);
+      return NextResponse.json({ ok: true });
     }
 
-    if ('mindIntent' in result && result.mindIntent) {
-      await setMindIntent(result.mindIntent);
+    const result = trySelectPiece(state, square, clientId);
+    if (!result.success) {
+      return NextResponse.json({ error: result.error }, { status: 400 });
     }
 
     await updateAndBroadcast(result.newState!);
