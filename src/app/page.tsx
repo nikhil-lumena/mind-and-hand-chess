@@ -1,15 +1,15 @@
 'use client';
 
-import { SocketProvider } from '@/context/SocketContext';
+import { RealtimeProvider } from '@/context/RealtimeContext';
 import { GameProvider } from '@/context/GameContext';
 import { GameContainer } from '@/components/GameContainer';
 
 export default function Home() {
   return (
-    <SocketProvider>
+    <RealtimeProvider>
       <GameProvider>
         <GameContainer />
       </GameProvider>
-    </SocketProvider>
+    </RealtimeProvider>
   );
 }

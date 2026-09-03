@@ -1,6 +1,7 @@
 # Mind & Hand Chess
 
-A **2v2 online chess variant** built with Next.js, TypeScript, and Socket.IO.
+A **2v2 online chess variant** built with Next.js, TypeScript, Pusher Channels, and Upstash Redis.
+Deploys to **Vercel** as a standard Next.js app — no custom server required.
 
 ## The Game
 
@@ -15,20 +16,92 @@ Standard chess rules apply (piece movement, captures, castling, en passant, prom
 
 **Turn flow:** White Mind selects → White Hand moves → Black Mind selects → Black Hand moves → repeat.
 
-## How to Play
+---
 
-### Setup
+## Prerequisites
+
+| Service | Free tier | What it provides |
+|---------|-----------|------------------|
+| [Pusher Channels](https://pusher.com) | 200 K messages/day, 100 connections | Realtime pub/sub so all four players see moves instantly |
+| [Upstash Redis](https://upstash.com) | 10 K commands/day | Durable game state that survives across serverless invocations |
+
+You need API keys from both — see **Setup** below.
+
+---
+
+## Setup
+
+### 1. Clone & install
 
 ```bash
+git clone https://github.com/nikhil-lumena/mind-and-hand-chess.git
+cd mind-and-hand-chess
 npm install
+```
+
+### 2. Create service accounts
+
+**Pusher Channels**
+1. Sign up at [pusher.com](https://pusher.com).
+2. Create a new **Channels** app (default settings are fine).
+3. Go to the app → **App Keys** tab → copy `app_id`, `key`, `secret`, and `cluster`.
+
+**Upstash Redis**
+1. Sign up at [console.upstash.com](https://console.upstash.com).
+2. Create a new Redis database (any region).
+3. Under **REST API**, copy the `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`.
+
+### 3. Configure environment variables
+
+Copy the example file and fill in your keys:
+
+```bash
+cp .env.example .env.local
+```
+
+Edit `.env.local`:
+
+```env
+NEXT_PUBLIC_PUSHER_KEY=your-pusher-key
+NEXT_PUBLIC_PUSHER_CLUSTER=us2
+PUSHER_APP_ID=your-pusher-app-id
+PUSHER_SECRET=your-pusher-secret
+UPSTASH_REDIS_REST_URL=https://your-db.upstash.io
+UPSTASH_REDIS_REST_TOKEN=AXxx...
+```
+
+### 4. Run locally
+
+```bash
 npm run dev
 ```
 
-The server starts at **http://localhost:3000**.
+Open **http://localhost:3000** in four browser windows (or share the URL with friends).
+
+---
+
+## Deploy on Vercel
+
+1. Push this repo to GitHub (or fork it).
+2. Import the project in [Vercel](https://vercel.com/new).
+3. In **Settings → Environment Variables**, add:
+   - `NEXT_PUBLIC_PUSHER_KEY`
+   - `NEXT_PUBLIC_PUSHER_CLUSTER`
+   - `PUSHER_APP_ID`
+   - `PUSHER_SECRET`
+   - `UPSTASH_REDIS_REST_URL`
+   - `UPSTASH_REDIS_REST_TOKEN`
+4. Deploy — Vercel runs `next build` automatically.
+
+> **Tip:** Upstash is available as a [Vercel Integration](https://vercel.com/integrations/upstash). Installing it auto-provisions the Redis database and injects the env vars.
+
+---
+
+## How to Play
 
 ### Joining a Game
 
-1. Open **four browser windows** (or share the URL with three friends).
+1. Open the app in **four browser windows** (or share the URL).
 2. Each player enters a display name and sits in one of the four seats:
    - White Mind, White Hand, Black Mind, Black Hand
 3. The game starts automatically when all four seats are filled.
@@ -41,59 +114,83 @@ The server starts at **http://localhost:3000**.
 - **Check** is shown as a red highlight on the king and a pulsing CHECK badge.
 - **Game over** (checkmate, stalemate, draw) shows a result overlay with a New Game button.
 
-### Spectating
-
-If you haven't taken a seat, you can watch the board update in real time from the lobby.
+---
 
 ## Project Structure
 
 ```
-├── server/
-│   ├── index.ts              # Express + Next.js + Socket.IO server
-│   └── socketHandlers.ts     # WebSocket event handlers
 ├── src/
 │   ├── app/
-│   │   ├── layout.tsx        # Root layout
-│   │   ├── page.tsx          # Entry point
-│   │   └── globals.css       # Global styles
+│   │   ├── api/
+│   │   │   ├── pusher/auth/route.ts   # Pusher presence channel auth
+│   │   │   └── game/
+│   │   │       ├── state/route.ts    # GET current game state
+│   │   │       ├── join/route.ts     # POST join a seat
+│   │   │       ├── leave/route.ts    # POST leave a seat
+│   │   │       ├── select/route.ts   # POST Mind selects a piece
+│   │   │       ├── move/route.ts     # POST Hand makes a move
+│   │   │       ├── new/route.ts      # POST start a new game
+│   │   │       └── cleanup/route.ts  # POST release disconnected seats
+│   │   ├── layout.tsx
+│   │   ├── page.tsx
+│   │   └── globals.css
+│   ├── lib/
+│   │   ├── pusher-server.ts          # Pusher server-side client
+│   │   ├── redis.ts                  # Upstash Redis client
+│   │   └── gameStore.ts              # Game state CRUD + broadcast
 │   ├── shared/
-│   │   ├── types.ts          # Shared types & constants
-│   │   └── gameEngine.ts     # Game logic (chess.js wrapper)
+│   │   ├── types.ts                  # Shared types & constants
+│   │   └── gameEngine.ts             # chess.js wrapper & validation
 │   ├── context/
-│   │   ├── SocketContext.tsx  # Socket.IO connection
-│   │   └── GameContext.tsx    # Game state management
+│   │   ├── RealtimeContext.tsx        # Pusher Channels connection
+│   │   └── GameContext.tsx            # Game state + API actions
 │   └── components/
-│       ├── GameContainer.tsx  # Top-level container
-│       ├── Lobby.tsx          # Seat selection UI
-│       ├── GameView.tsx       # In-game layout
-│       ├── ChessBoard.tsx     # Interactive board
-│       ├── TurnBanner.tsx     # Turn / phase indicator
-│       ├── InfoPanel.tsx      # Players, captures, move list
+│       ├── GameContainer.tsx
+│       ├── Lobby.tsx
+│       ├── GameView.tsx
+│       ├── ChessBoard.tsx
+│       ├── TurnBanner.tsx
+│       ├── InfoPanel.tsx
 │       ├── PromotionDialog.tsx
 │       └── GameOverOverlay.tsx
 ```
 
+## Architecture
+
+```
+ Browser (×4)                         Vercel
+ ┌──────────────────┐  Pusher sub    ┌────────────────────────────┐
+ │ React + Pusher   ◄────────────────┤ Pusher Channels (managed)  │
+ │                  │                │                            │
+ │ fetch() intents  ├───► API Route ─┤  1. Read state from Redis  │
+ │                  │                │  2. Validate (chess.js)     │
+ │                  │                │  3. Write state to Redis    │
+ └──────────────────┘                │  4. Trigger via Pusher SDK  │
+                                     └────────────────────────────┘
+```
+
+- **Server-authoritative:** All game logic runs in API routes. Clients send intents; the server accepts or rejects.
+- **Durable state:** Game state lives in Upstash Redis and survives serverless cold starts.
+- **Realtime sync:** Pusher Channels pushes state updates to all connected clients instantly.
+- **chess.js as source of truth:** FEN, legal moves, check/checkmate/stalemate detection all come from chess.js.
+
 ## Tech Stack
 
 - **Next.js 14** (App Router) + **TypeScript**
-- **Socket.IO** for real-time multiplayer
+- **Pusher Channels** for managed WebSocket pub/sub
+- **Upstash Redis** for serverless-friendly durable state
 - **chess.js** for move generation, validation, and game-state management
-- **Express** as the HTTP/WebSocket server
+- **react-chessboard** for the interactive board UI
 - **CSS Modules** for styling
-
-## Architecture Notes
-
-- **Server-authoritative:** All game logic (move legality, turn order, role enforcement) is validated server-side. Clients send intents; the server accepts or rejects them.
-- **Single game room:** One shared in-memory game state. No database required.
-- **chess.js as source of truth:** FEN, legal moves, check/checkmate/stalemate detection all come from chess.js — no hand-rolled move generation.
 
 ## Scripts
 
 | Script | Description |
 |--------|-------------|
-| `npm run dev` | Start development server (with hot reload) |
-| `npm run build` | Build Next.js for production |
-| `npm start` | Start production server |
+| `npm run dev` | Start local development server |
+| `npm run build` | Build for production |
+| `npm start` | Start production server locally |
+| `npm run lint` | Run ESLint |
 
 ## License
 
