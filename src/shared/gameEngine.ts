@@ -5,6 +5,8 @@ import {
   TeamColor,
   GamePhase,
   MoveRecord,
+  MindIntent,
+  SyncReveal,
   Seat,
   SeatId,
   SEAT_IDS,
@@ -39,6 +41,12 @@ export function createInitialState(): GameState {
     moves: [],
     capturedPieces: { white: [], black: [] },
     seats: createEmptySeats(),
+    syncMode: false,
+    syncTally: {
+      white: { synced: 0, total: 0 },
+      black: { synced: 0, total: 0 },
+    },
+    lastSyncReveal: null,
   };
 }
 
@@ -105,13 +113,53 @@ export function trySelectPiece(
     return { success: false, error: 'That piece has no legal moves.' };
   }
 
+  const nextPhase: GamePhase = state.syncMode ? 'mind-intent' : 'hand-moving';
+
   return {
     success: true,
     newState: {
       ...state,
       selectedSquare: square,
+      phase: nextPhase,
+    },
+  };
+}
+
+export function trySetMindIntent(
+  state: GameState,
+  to: string,
+  playerId: string
+): { success: boolean; error?: string; newState?: GameState; mindIntent?: MindIntent } {
+  if (state.status !== 'playing') {
+    return { success: false, error: 'Game is not in progress.' };
+  }
+  if (state.phase !== 'mind-intent') {
+    return { success: false, error: 'Not the Mind intent phase.' };
+  }
+  if (!state.selectedSquare) {
+    return { success: false, error: 'No piece selected.' };
+  }
+
+  const mindSeatId: SeatId = `${state.turn}-mind`;
+  const mindSeat = state.seats[mindSeatId];
+  if (mindSeat.playerId !== playerId) {
+    return { success: false, error: 'It is not your turn to set intent.' };
+  }
+
+  const chess = new Chess(state.fen);
+  const legalMoves = chess.moves({ square: state.selectedSquare as Square, verbose: true });
+  const isLegal = legalMoves.some((m) => m.to === to);
+  if (!isLegal) {
+    return { success: false, error: 'That is not a legal destination for the selected piece.' };
+  }
+
+  return {
+    success: true,
+    newState: {
+      ...state,
       phase: 'hand-moving',
     },
+    mindIntent: { from: state.selectedSquare, to },
   };
 }
 
@@ -120,7 +168,8 @@ export function tryMakeMove(
   from: string,
   to: string,
   promotion: string | undefined,
-  playerId: string
+  playerId: string,
+  mindIntent?: MindIntent | null
 ): { success: boolean; error?: string; newState?: GameState } {
   if (state.status !== 'playing') {
     return { success: false, error: 'Game is not in progress.' };
@@ -206,6 +255,27 @@ export function tryMakeMove(
     }
   }
 
+  let lastSyncReveal: SyncReveal | null = null;
+  const syncTally = {
+    white: { ...state.syncTally.white },
+    black: { ...state.syncTally.black },
+  };
+
+  if (state.syncMode && mindIntent) {
+    const inSync = mindIntent.to === to;
+    lastSyncReveal = {
+      team: state.turn,
+      mindFrom: mindIntent.from,
+      mindTo: mindIntent.to,
+      handTo: to,
+      inSync,
+    };
+    syncTally[state.turn].total += 1;
+    if (inSync) {
+      syncTally[state.turn].synced += 1;
+    }
+  }
+
   return {
     success: true,
     newState: {
@@ -220,6 +290,8 @@ export function tryMakeMove(
       isCheck: chess.isCheck(),
       moves: [...state.moves, moveRecord],
       capturedPieces,
+      syncTally,
+      lastSyncReveal,
     },
   };
 }

@@ -161,6 +161,76 @@
   cursor: not-allowed;
 }
 
+.syncToggleRow {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.syncToggleLabel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.syncToggleIcon {
+  font-size: 1.3rem;
+}
+
+.syncToggleText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.syncToggleText strong {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.syncToggleDesc {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.syncToggleBtn {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.syncToggleBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.syncToggleBtnOn {
+  background: var(--accent-green);
+}
+
+.syncToggleKnob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: white;
+  transition: transform 0.2s;
+}
+
+.syncToggleBtnOn .syncToggleKnob {
+  transform: translateX(20px);
+}
+
 .statusNote {
   text-align: center;
   color: var(--accent-gold);

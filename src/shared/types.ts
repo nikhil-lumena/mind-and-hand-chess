@@ -11,9 +11,27 @@ export interface Seat {
   connected: boolean;
 }
 
-export type GamePhase = 'mind-selecting' | 'hand-moving';
+export type GamePhase = 'mind-selecting' | 'mind-intent' | 'hand-moving';
 
 export type GameStatus = 'waiting' | 'playing' | 'checkmate' | 'stalemate' | 'draw';
+
+export interface MindIntent {
+  from: string;
+  to: string;
+}
+
+export interface SyncTally {
+  synced: number;
+  total: number;
+}
+
+export interface SyncReveal {
+  team: TeamColor;
+  mindFrom: string;
+  mindTo: string;
+  handTo: string;
+  inSync: boolean;
+}
 
 export interface MoveRecord {
   moveNumber: number;
@@ -38,6 +56,9 @@ export interface GameState {
   moves: MoveRecord[];
   capturedPieces: { white: string[]; black: string[] };
   seats: Record<SeatId, Seat>;
+  syncMode: boolean;
+  syncTally: { white: SyncTally; black: SyncTally };
+  lastSyncReveal: SyncReveal | null;
 }
 
 export const SEAT_IDS: SeatId[] = ['white-mind', 'white-hand', 'black-mind', 'black-hand'];

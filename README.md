@@ -16,6 +16,17 @@ Standard chess rules apply (piece movement, captures, castling, en passant, prom
 
 **Turn flow:** White Mind selects → White Hand moves → Black Mind selects → Black Hand moves → repeat.
 
+### Sync Mode (optional)
+
+An optional **Sync Mode** can be toggled on in the lobby before the game starts. When enabled, the Mind gets an extra step after selecting a piece: they secretly choose an **intended destination** (where they want the Hand to move). The Hand never sees this intent while making their move.
+
+After the Hand moves, the Mind's intended destination is revealed to everyone:
+
+- **Green arrow** — Mind and Hand chose the same square (in sync!)
+- **Red arrow** — Mind wanted a different square (out of sync); a blue arrow also shows where the Hand actually moved
+
+A running tally tracks each team's sync rate: e.g. "White: 3/5 (60%)". The tally resets with each new game. When Sync Mode is off, gameplay is identical to classic Mind & Hand Chess.
+
 ---
 
 ## Prerequisites
@@ -112,6 +123,7 @@ Open **http://localhost:3000** in four browser windows (or share the URL with fr
 - **Hand's turn:** The selected piece is highlighted. Legal destination squares show dots (empty) or rings (captures). Click a target square.
 - **Promotion:** When a pawn reaches the last rank, the Hand picks Q / R / B / N.
 - **Check** is shown as a red highlight on the king and a pulsing CHECK badge.
+- **Sync Mode** (if enabled): After Mind selects a piece, purple dots show legal destinations — Mind clicks one as their secret intent. After Hand moves, green/red arrows reveal whether they matched. A sync tally in the side panel tracks each team's sync rate.
 - **Game over** (checkmate, stalemate, draw) shows a result overlay with a New Game button.
 
 ---
@@ -128,8 +140,10 @@ Open **http://localhost:3000** in four browser windows (or share the URL with fr
 │   │   │       ├── join/route.ts     # POST join a seat
 │   │   │       ├── leave/route.ts    # POST leave a seat
 │   │   │       ├── select/route.ts   # POST Mind selects a piece
+│   │   │       ├── intent/route.ts  # POST Mind sets secret intent (Sync Mode)
 │   │   │       ├── move/route.ts     # POST Hand makes a move
 │   │   │       ├── new/route.ts      # POST start a new game
+│   │   │       ├── sync-mode/route.ts # POST toggle Sync Mode
 │   │   │       └── cleanup/route.ts  # POST release disconnected seats
 │   │   ├── layout.tsx
 │   │   ├── page.tsx

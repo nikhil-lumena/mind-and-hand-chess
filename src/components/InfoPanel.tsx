@@ -23,6 +23,7 @@ export function InfoPanel({ side }: InfoPanelProps) {
     return (
       <div className={styles.panel}>
         <PlayersSection />
+        {gameState.syncMode && <SyncTallySection />}
         <CapturedPieces />
       </div>
     );
@@ -53,7 +54,7 @@ function PlayersSection() {
             const isActive =
               gameState.status === 'playing' &&
               gameState.turn === team &&
-              ((gameState.phase === 'mind-selecting' && role === 'mind') ||
+              (((gameState.phase === 'mind-selecting' || gameState.phase === 'mind-intent') && role === 'mind') ||
                 (gameState.phase === 'hand-moving' && role === 'hand'));
 
             return (
@@ -68,6 +69,44 @@ function PlayersSection() {
           })}
         </div>
       ))}
+    </div>
+  );
+}
+
+function SyncTallySection() {
+  const { gameState } = useGame();
+  const { white, black } = gameState.syncTally;
+
+  return (
+    <div className={styles.section}>
+      <h3 className={styles.sectionTitle}>🔗 Mind↔Hand Sync</h3>
+      <div className={styles.syncRow}>
+        <span className={styles.syncLabel}>♔ White:</span>
+        <span className={styles.syncValue}>
+          {white.total === 0 ? '—' : `${white.synced}/${white.total}`}
+        </span>
+        {white.total > 0 && (
+          <span className={styles.syncPct}>
+            {Math.round((white.synced / white.total) * 100)}%
+          </span>
+        )}
+      </div>
+      <div className={styles.syncRow}>
+        <span className={styles.syncLabel}>♚ Black:</span>
+        <span className={styles.syncValue}>
+          {black.total === 0 ? '—' : `${black.synced}/${black.total}`}
+        </span>
+        {black.total > 0 && (
+          <span className={styles.syncPct}>
+            {Math.round((black.synced / black.total) * 100)}%
+          </span>
+        )}
+      </div>
+      {gameState.lastSyncReveal && (
+        <div className={`${styles.syncRevealBadge} ${gameState.lastSyncReveal.inSync ? styles.syncBadgeGreen : styles.syncBadgeRed}`}>
+          {gameState.lastSyncReveal.inSync ? '✓ In Sync!' : '✗ Out of Sync'}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,9 +1,10 @@
 import { getRedis } from './redis';
 import { getPusher, GAME_CHANNEL } from './pusher-server';
-import type { GameState } from '@/shared/types';
+import type { GameState, MindIntent } from '@/shared/types';
 import { createInitialState } from '@/shared/gameEngine';
 
 const STATE_KEY = 'game:state';
+const MIND_INTENT_KEY = 'game:mind-intent';
 
 export async function getGameState(): Promise<GameState> {
   const redis = getRedis();
@@ -19,6 +20,25 @@ export async function getGameState(): Promise<GameState> {
 export async function setGameState(state: GameState): Promise<void> {
   const redis = getRedis();
   await redis.set(STATE_KEY, state);
+}
+
+export async function getMindIntent(): Promise<MindIntent | null> {
+  const redis = getRedis();
+  return await redis.get<MindIntent>(MIND_INTENT_KEY);
+}
+
+export async function setMindIntent(intent: MindIntent | null): Promise<void> {
+  const redis = getRedis();
+  if (intent) {
+    await redis.set(MIND_INTENT_KEY, intent);
+  } else {
+    await redis.del(MIND_INTENT_KEY);
+  }
+}
+
+export async function clearMindIntent(): Promise<void> {
+  const redis = getRedis();
+  await redis.del(MIND_INTENT_KEY);
 }
 
 export async function updateAndBroadcast(state: GameState): Promise<void> {
