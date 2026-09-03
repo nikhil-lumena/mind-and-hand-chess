@@ -12,7 +12,7 @@ import styles from './ChessBoard.module.css';
 const BOARD_WIDTH = 560;
 
 export function ChessBoard() {
-  const { gameState, mySeatId, selectPiece, makeMove } = useGame();
+  const { gameState, mySeatId, selectPiece, setMindIntent, makeMove } = useGame();
   const [promotionPending, setPromotionPending] = useState<{ from: string; to: string } | null>(null);
 
   const myRole = mySeatId ? seatRole(mySeatId) : null;
@@ -21,6 +21,12 @@ export function ChessBoard() {
   const isMindTurn =
     gameState.status === 'playing' &&
     gameState.phase === 'mind-selecting' &&
+    myRole === 'mind' &&
+    myTeam === gameState.turn;
+
+  const isMindIntentTurn =
+    gameState.status === 'playing' &&
+    gameState.phase === 'mind-intent' &&
     myRole === 'mind' &&
     myTeam === gameState.turn;
 
@@ -40,6 +46,12 @@ export function ChessBoard() {
     const moves = getLegalMovesForSquare(gameState.fen, gameState.selectedSquare);
     return new Set(moves.map((m) => m.to));
   }, [isHandTurn, gameState.fen, gameState.selectedSquare]);
+
+  const intentTargets = useMemo(() => {
+    if (!isMindIntentTurn || !gameState.selectedSquare) return new Set<string>();
+    const moves = getLegalMovesForSquare(gameState.fen, gameState.selectedSquare);
+    return new Set(moves.map((m) => m.to));
+  }, [isMindIntentTurn, gameState.fen, gameState.selectedSquare]);
 
   const lastMove = useMemo(() => {
     if (gameState.moves.length === 0) return null;
@@ -66,6 +78,31 @@ export function ChessBoard() {
     }
     return null;
   }, [gameState.isCheck, gameState.turn, gameState.fen]);
+
+  const syncArrows = useMemo(() => {
+    const reveal = gameState.lastSyncReveal;
+    if (!reveal) return [];
+    const arrows: Array<{ startSquare: string; endSquare: string; color: string }> = [];
+    if (reveal.inSync) {
+      arrows.push({
+        startSquare: reveal.mindFrom,
+        endSquare: reveal.mindTo,
+        color: 'rgba(34, 197, 94, 0.85)',
+      });
+    } else {
+      arrows.push({
+        startSquare: reveal.mindFrom,
+        endSquare: reveal.mindTo,
+        color: 'rgba(239, 68, 68, 0.85)',
+      });
+      arrows.push({
+        startSquare: reveal.mindFrom,
+        endSquare: reveal.handTo,
+        color: 'rgba(59, 130, 246, 0.7)',
+      });
+    }
+    return arrows;
+  }, [gameState.lastSyncReveal]);
 
   const squareStyles = useMemo(() => {
     const s: Record<string, React.CSSProperties> = {};
@@ -99,6 +136,27 @@ export function ChessBoard() {
       }
     }
 
+    if (isMindIntentTurn && gameState.selectedSquare) {
+      for (const sq of intentTargets) {
+        const existingStyle = s[sq] || {};
+        const fenBoard = gameState.fen.split(' ')[0];
+        const hasPiece = squareHasPiece(sq, fenBoard);
+        if (hasPiece) {
+          s[sq] = {
+            ...existingStyle,
+            background: existingStyle.background || undefined,
+            boxShadow: 'inset 0 0 0 4px rgba(168, 85, 247, 0.7)',
+            borderRadius: '50%',
+          };
+        } else {
+          s[sq] = {
+            ...existingStyle,
+            background: 'radial-gradient(circle, rgba(168, 85, 247, 0.55) 24%, transparent 25%)',
+          };
+        }
+      }
+    }
+
     if (isHandTurn && gameState.selectedSquare) {
       for (const sq of legalTargets) {
         const existingStyle = s[sq] || {};
@@ -121,7 +179,7 @@ export function ChessBoard() {
     }
 
     return s;
-  }, [lastMove, kingInCheckSquare, gameState.selectedSquare, isMindTurn, isHandTurn, selectableSquares, legalTargets, gameState.fen]);
+  }, [lastMove, kingInCheckSquare, gameState.selectedSquare, isMindTurn, isMindIntentTurn, isHandTurn, selectableSquares, intentTargets, legalTargets, gameState.fen]);
 
   const canDragPiece = useCallback(
     ({ square }: PieceHandlerArgs): boolean => {
@@ -131,13 +189,17 @@ export function ChessBoard() {
         return true;
       }
 
+      if (isMindIntentTurn && gameState.selectedSquare && square === gameState.selectedSquare) {
+        return true;
+      }
+
       if (isHandTurn && gameState.selectedSquare && square === gameState.selectedSquare) {
         return true;
       }
 
       return false;
     },
-    [isMindTurn, isHandTurn, selectableSquares, gameState.selectedSquare]
+    [isMindTurn, isMindIntentTurn, isHandTurn, selectableSquares, gameState.selectedSquare]
   );
 
   const handlePieceDrop = useCallback(
@@ -152,6 +214,13 @@ export function ChessBoard() {
         if (selectableSquares.has(sourceSquare)) {
           selectPiece(sourceSquare);
         }
+        return false;
+      }
+
+      if (isMindIntentTurn && gameState.selectedSquare) {
+        if (sourceSquare !== gameState.selectedSquare) return false;
+        if (!intentTargets.has(targetSquare)) return false;
+        setMindIntent(targetSquare);
         return false;
       }
 
@@ -170,13 +239,18 @@ export function ChessBoard() {
 
       return false;
     },
-    [isMindTurn, isHandTurn, selectableSquares, legalTargets, gameState.selectedSquare, gameState.fen, selectPiece, makeMove]
+    [isMindTurn, isMindIntentTurn, isHandTurn, selectableSquares, intentTargets, legalTargets, gameState.selectedSquare, gameState.fen, selectPiece, setMindIntent, makeMove]
   );
 
   const handleSquareClick = useCallback(
     ({ square }: SquareHandlerArgs) => {
       if (isMindTurn && selectableSquares.has(square)) {
         selectPiece(square);
+        return;
+      }
+
+      if (isMindIntentTurn && gameState.selectedSquare && intentTargets.has(square)) {
+        setMindIntent(square);
         return;
       }
 
@@ -189,7 +263,7 @@ export function ChessBoard() {
         return;
       }
     },
-    [isMindTurn, isHandTurn, selectableSquares, legalTargets, gameState.selectedSquare, gameState.fen, selectPiece, makeMove]
+    [isMindTurn, isMindIntentTurn, isHandTurn, selectableSquares, intentTargets, legalTargets, gameState.selectedSquare, gameState.fen, selectPiece, setMindIntent, makeMove]
   );
 
   const handlePieceClick = useCallback(
@@ -237,6 +311,8 @@ export function ChessBoard() {
           onPieceClick: handlePieceClick,
           onPieceDrag: handlePieceDrag,
           squareStyles,
+          arrows: syncArrows,
+          allowDrawingArrows: false,
           boardStyle: {
             borderRadius: '4px',
             boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',

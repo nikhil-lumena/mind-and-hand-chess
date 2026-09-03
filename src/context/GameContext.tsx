@@ -13,8 +13,10 @@ interface GameContextValue {
   joinSeat: (seatId: SeatId) => void;
   leaveSeat: () => void;
   selectPiece: (square: string) => void;
+  setMindIntent: (to: string) => void;
   makeMove: (from: string, to: string, promotion?: string) => void;
   newGame: () => void;
+  toggleSyncMode: (enabled: boolean) => void;
   error: string | null;
   clearError: () => void;
 }
@@ -139,6 +141,13 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     [clientId],
   );
 
+  const setMindIntentAction = useCallback(
+    (to: string) => {
+      apiCall('/api/game/intent', { to, clientId }).catch((err) => setError(err.message));
+    },
+    [clientId],
+  );
+
   const makeMove = useCallback(
     (from: string, to: string, promotion?: string) => {
       apiCall('/api/game/move', { from, to, promotion, clientId }).catch((err) =>
@@ -150,6 +159,10 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 
   const newGame = useCallback(() => {
     apiCall('/api/game/new').catch((err) => setError(err.message));
+  }, []);
+
+  const toggleSyncMode = useCallback((enabled: boolean) => {
+    apiCall('/api/game/sync-mode', { syncMode: enabled }).catch((err) => setError(err.message));
   }, []);
 
   const clearError = useCallback(() => setError(null), []);
@@ -164,8 +177,10 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         joinSeat,
         leaveSeat,
         selectPiece,
+        setMindIntent: setMindIntentAction,
         makeMove,
         newGame,
+        toggleSyncMode,
         error,
         clearError,
       }}

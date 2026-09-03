@@ -11,7 +11,7 @@ const ROLE_ICONS: Record<string, string> = {
 };
 
 export function Lobby() {
-  const { gameState, myPlayerName, setMyPlayerName, joinSeat, error, clearError } = useGame();
+  const { gameState, myPlayerName, setMyPlayerName, joinSeat, toggleSyncMode, error, clearError } = useGame();
   const [nameInput, setNameInput] = useState(myPlayerName);
 
   const handleJoin = (seatId: SeatId) => {
@@ -67,6 +67,25 @@ export function Lobby() {
             onJoin={handleJoin}
             teamClass={styles.blackTeam}
           />
+        </div>
+
+        <div className={styles.syncToggleRow}>
+          <label className={styles.syncToggleLabel}>
+            <span className={styles.syncToggleIcon}>🔗</span>
+            <span className={styles.syncToggleText}>
+              <strong>Sync Mode</strong>
+              <span className={styles.syncToggleDesc}>Mind picks a secret destination; compare after Hand moves</span>
+            </span>
+            <button
+              type="button"
+              className={`${styles.syncToggleBtn} ${gameState.syncMode ? styles.syncToggleBtnOn : ''}`}
+              onClick={() => toggleSyncMode(!gameState.syncMode)}
+              disabled={gameState.status !== 'waiting'}
+              aria-pressed={gameState.syncMode}
+            >
+              <span className={styles.syncToggleKnob} />
+            </button>
+          </label>
         </div>
 
         {gameState.status !== 'waiting' && (

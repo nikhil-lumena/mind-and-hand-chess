@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getGameState, updateAndBroadcast } from '@/lib/gameStore';
+import { getGameState, updateAndBroadcast, clearMindIntent } from '@/lib/gameStore';
 import { SEAT_IDS } from '@/shared/types';
 
 export async function POST(req: NextRequest) {
@@ -31,6 +31,7 @@ export async function POST(req: NextRequest) {
       state.status = 'waiting';
       state.selectedSquare = null;
       state.phase = 'mind-selecting';
+      await clearMindIntent();
     }
 
     await updateAndBroadcast(state);

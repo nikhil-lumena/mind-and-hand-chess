@@ -21,13 +21,21 @@ export function TurnBanner() {
   }
 
   const activeSeatId: SeatId =
-    gameState.phase === 'mind-selecting'
-      ? `${gameState.turn}-mind`
-      : `${gameState.turn}-hand`;
+    gameState.phase === 'hand-moving'
+      ? `${gameState.turn}-hand`
+      : `${gameState.turn}-mind`;
 
   const activeSeat = gameState.seats[activeSeatId];
   const isMyTurn = mySeatId === activeSeatId;
-  const phaseLabel = gameState.phase === 'mind-selecting' ? 'Mind selects a piece' : 'Hand makes a move';
+
+  let phaseLabel: string;
+  if (gameState.phase === 'mind-selecting') {
+    phaseLabel = 'Mind selects a piece';
+  } else if (gameState.phase === 'mind-intent') {
+    phaseLabel = 'Mind picks intended destination';
+  } else {
+    phaseLabel = 'Hand makes a move';
+  }
 
   const turnTeamClass = gameState.turn === 'white' ? styles.whiteTurn : styles.blackTurn;
 
