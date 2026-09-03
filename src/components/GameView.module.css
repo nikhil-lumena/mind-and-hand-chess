@@ -1,0 +1,72 @@
+.gameView {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.error {
+  color: var(--accent-red);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 8px 16px;
+  background: rgba(248, 113, 113, 0.1);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.gameLayout {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  justify-content: center;
+  width: 100%;
+}
+
+.boardWrapper {
+  flex-shrink: 0;
+}
+
+.bottomBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 8px 0;
+}
+
+.myRole {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.roleBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 16px;
+  border-radius: 8px;
+  background: rgba(240, 192, 64, 0.12);
+  border: 1px solid rgba(240, 192, 64, 0.3);
+  color: var(--accent-gold);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.leaveBtn {
+  padding: 6px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  transition: all 0.15s;
+}
+
+.leaveBtn:hover {
+  background: rgba(248, 113, 113, 0.15);
+  border-color: rgba(248, 113, 113, 0.3);
+  color: var(--accent-red);
+}

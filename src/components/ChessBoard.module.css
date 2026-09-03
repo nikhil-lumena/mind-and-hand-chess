@@ -1,0 +1,111 @@
+.boardContainer {
+  position: relative;
+}
+
+.board {
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+
+.row {
+  display: flex;
+}
+
+.cell {
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  user-select: none;
+  transition: background 0.1s;
+}
+
+.light {
+  background: var(--board-light);
+}
+
+.dark {
+  background: var(--board-dark);
+}
+
+.selected {
+  background: var(--highlight-selected) !important;
+}
+
+.check {
+  background: var(--highlight-check) !important;
+}
+
+.selectable {
+  box-shadow: inset 0 0 0 3px rgba(240, 192, 64, 0.6);
+}
+
+.selectable:hover {
+  background: rgba(240, 192, 64, 0.3) !important;
+}
+
+.legalTarget:hover {
+  background: rgba(78, 140, 255, 0.35) !important;
+}
+
+.piece {
+  font-size: 48px;
+  line-height: 1;
+  pointer-events: none;
+  filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.4));
+  z-index: 1;
+}
+
+.whitePiece {
+  color: #fff;
+  -webkit-text-stroke: 1px #555;
+}
+
+.blackPiece {
+  color: #222;
+  -webkit-text-stroke: 0.5px #000;
+}
+
+.legalDot {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--highlight-legal);
+  z-index: 0;
+}
+
+.captureRing {
+  position: absolute;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 4px solid var(--highlight-legal);
+  z-index: 0;
+}
+
+.rankLabel {
+  position: absolute;
+  top: 3px;
+  left: 4px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.fileLabel {
+  position: absolute;
+  bottom: 2px;
+  right: 4px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  pointer-events: none;
+  z-index: 2;
+}
