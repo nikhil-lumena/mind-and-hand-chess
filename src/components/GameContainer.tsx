@@ -2,14 +2,14 @@
 
 import React from 'react';
 import { useGame } from '@/context/GameContext';
-import { useSocket } from '@/context/SocketContext';
+import { useRealtime } from '@/context/RealtimeContext';
 import { Lobby } from './Lobby';
 import { GameView } from './GameView';
 import styles from './GameContainer.module.css';
 
 export function GameContainer() {
-  const { gameState, mySeatId } = useGame();
-  const { connected } = useSocket();
+  const { mySeatId } = useGame();
+  const { connected } = useRealtime();
 
   const showLobby = !mySeatId;
 

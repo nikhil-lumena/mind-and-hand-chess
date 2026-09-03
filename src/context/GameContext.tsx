@@ -1,7 +1,7 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { useSocket } from './SocketContext';
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
+import { useRealtime } from './RealtimeContext';
 import type { GameState, SeatId } from '@/shared/types';
 import { createInitialState } from '@/shared/gameEngine';
 
@@ -27,79 +27,130 @@ export function useGame() {
   return ctx;
 }
 
+async function apiCall(path: string, body?: Record<string, unknown>) {
+  const res = await fetch(path, {
+    method: body ? 'POST' : 'GET',
+    headers: body ? { 'Content-Type': 'application/json' } : undefined,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.error || 'Request failed');
+  }
+  return data;
+}
+
 export function GameProvider({ children }: { children: React.ReactNode }) {
-  const { socket } = useSocket();
+  const { channel, clientId } = useRealtime();
   const [gameState, setGameState] = useState<GameState>(createInitialState());
   const [mySeatId, setMySeatId] = useState<SeatId | null>(null);
   const [myPlayerName, setMyPlayerName] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const clientIdRef = useRef(clientId);
+  clientIdRef.current = clientId;
+  const chunksRef = useRef<Map<string, string[]>>(new Map());
 
   useEffect(() => {
-    if (!socket) return;
+    apiCall('/api/game/state')
+      .then((state) => {
+        setGameState(state);
+        syncMySeat(state, clientIdRef.current);
+      })
+      .catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-    const handleState = (state: GameState) => {
-      setGameState(state);
-      setMySeatId((prev) => {
-        if (!prev) return null;
-        const seat = state.seats[prev];
-        if (!seat || seat.playerId !== socket.id) return null;
-        return prev;
-      });
-    };
-    const handleSeatError = (msg: string) => {
-      setError(msg);
-      setMySeatId(null);
-    };
-    const handleMoveError = (msg: string) => setError(msg);
+  useEffect(() => {
+    if (!channel) return;
 
-    socket.on('game-state', handleState);
-    socket.on('seat-error', handleSeatError);
-    socket.on('move-error', handleMoveError);
+    const onState = (data: GameState) => {
+      setGameState(data);
+      syncMySeat(data, clientIdRef.current);
+    };
+
+    const onStateChunk = (msg: {
+      batchId: string;
+      index: number;
+      total: number;
+      data: string;
+    }) => {
+      const chunks = chunksRef.current;
+      let arr = chunks.get(msg.batchId);
+      if (!arr) {
+        arr = new Array(msg.total).fill('');
+        chunks.set(msg.batchId, arr);
+      }
+      arr[msg.index] = msg.data;
+      if (arr.every((c) => c !== '')) {
+        const full = JSON.parse(arr.join('')) as GameState;
+        chunks.delete(msg.batchId);
+        onState(full);
+      }
+    };
+
+    const onMemberRemoved = (member: { id: string }) => {
+      apiCall('/api/game/cleanup', { disconnectedClientId: member.id }).catch(() => {});
+    };
+
+    channel.bind('game-state', onState);
+    channel.bind('game-state-chunk', onStateChunk);
+    channel.bind('pusher:member_removed', onMemberRemoved);
 
     return () => {
-      socket.off('game-state', handleState);
-      socket.off('seat-error', handleSeatError);
-      socket.off('move-error', handleMoveError);
+      channel.unbind('game-state', onState);
+      channel.unbind('game-state-chunk', onStateChunk);
+      channel.unbind('pusher:member_removed', onMemberRemoved);
     };
-  }, [socket]);
+  }, [channel]);
+
+  function syncMySeat(state: GameState, cid: string) {
+    setMySeatId(() => {
+      for (const id of Object.keys(state.seats) as SeatId[]) {
+        if (state.seats[id].playerId === cid) return id;
+      }
+      return null;
+    });
+  }
 
   const joinSeat = useCallback(
     (seatId: SeatId) => {
-      if (!socket) return;
-      socket.emit('join-seat', { seatId, playerName: myPlayerName });
-      setMySeatId(seatId);
       setError(null);
+      apiCall('/api/game/join', { seatId, playerName: myPlayerName, clientId })
+        .then(() => setMySeatId(seatId))
+        .catch((err) => {
+          setError(err.message);
+          setMySeatId(null);
+        });
     },
-    [socket, myPlayerName]
+    [clientId, myPlayerName],
   );
 
   const leaveSeat = useCallback(() => {
-    if (!socket) return;
-    socket.emit('leave-seat');
-    setMySeatId(null);
     setError(null);
-  }, [socket]);
+    apiCall('/api/game/leave', { clientId })
+      .then(() => setMySeatId(null))
+      .catch((err) => setError(err.message));
+  }, [clientId]);
 
   const selectPiece = useCallback(
     (square: string) => {
-      if (!socket) return;
-      socket.emit('select-piece', { square });
+      apiCall('/api/game/select', { square, clientId }).catch((err) => setError(err.message));
     },
-    [socket]
+    [clientId],
   );
 
   const makeMove = useCallback(
     (from: string, to: string, promotion?: string) => {
-      if (!socket) return;
-      socket.emit('make-move', { from, to, promotion });
+      apiCall('/api/game/move', { from, to, promotion, clientId }).catch((err) =>
+        setError(err.message),
+      );
     },
-    [socket]
+    [clientId],
   );
 
   const newGame = useCallback(() => {
-    if (!socket) return;
-    socket.emit('new-game');
-  }, [socket]);
+    apiCall('/api/game/new').catch((err) => setError(err.message));
+  }, []);
 
   const clearError = useCallback(() => setError(null), []);
 

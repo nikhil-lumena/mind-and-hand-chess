@@ -40,22 +40,6 @@ export interface GameState {
   seats: Record<SeatId, Seat>;
 }
 
-export interface ServerToClientEvents {
-  'game-state': (state: GameState) => void;
-  'seat-error': (msg: string) => void;
-  'move-error': (msg: string) => void;
-  'player-joined': (data: { seatId: SeatId; playerName: string }) => void;
-  'player-left': (data: { seatId: SeatId; playerName: string }) => void;
-}
-
-export interface ClientToServerEvents {
-  'join-seat': (data: { seatId: SeatId; playerName: string }) => void;
-  'leave-seat': () => void;
-  'select-piece': (data: { square: string }) => void;
-  'make-move': (data: { from: string; to: string; promotion?: string }) => void;
-  'new-game': () => void;
-}
-
 export const SEAT_IDS: SeatId[] = ['white-mind', 'white-hand', 'black-mind', 'black-hand'];
 
 export function seatLabel(seatId: SeatId): string {
