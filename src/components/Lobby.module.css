@@ -241,6 +241,22 @@
   background: var(--green);
   box-shadow: 0 3px 0 var(--green-deep);
   color: var(--ink);
+  animation: seatPop 0.5s var(--ease-spring) both;
+}
+
+@keyframes seatPop {
+  0% { transform: scale(0.85) rotate(-2deg); }
+  60% { transform: scale(1.06) rotate(1deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+.takenBadge {
+  animation: badgeSpin 0.6s var(--ease-spring) 0.1s both;
+}
+
+@keyframes badgeSpin {
+  0% { transform: scale(0) rotate(-180deg); }
+  100% { transform: scale(1) rotate(0); }
 }
 
 .roleTile {

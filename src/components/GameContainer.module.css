@@ -1,7 +1,13 @@
 .container {
+  position: relative;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+.container > * {
+  position: relative;
+  z-index: 1;
 }
 
 .header {
@@ -35,6 +41,12 @@
   box-shadow: 0 4px 0 var(--gold-deep);
   color: var(--ink);
   transform: rotate(-6deg);
+  animation: logoBob 3s ease-in-out infinite;
+}
+
+@keyframes logoBob {
+  0%, 100% { transform: rotate(-6deg) translateY(0); }
+  50% { transform: rotate(-2deg) translateY(-3px); }
 }
 
 .logoGlyph {

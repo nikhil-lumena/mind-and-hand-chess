@@ -6,6 +6,7 @@ import { useRealtime } from '@/context/RealtimeContext';
 import { useSound } from '@/context/SoundContext';
 import { Lobby } from './Lobby';
 import { GameView } from './GameView';
+import { Backdrop } from './Backdrop';
 import styles from './GameContainer.module.css';
 
 export function GameContainer() {
@@ -17,6 +18,7 @@ export function GameContainer() {
 
   return (
     <div className={styles.container}>
+      <Backdrop />
       <header className={styles.header}>
         <div className={styles.brand}>
           <div className={styles.logoMark} aria-hidden="true">

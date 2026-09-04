@@ -155,7 +155,7 @@ function TeamColumn({
         const occupied = seat.playerName !== null;
         const role = ROLE_META[seatRole(seatId)];
         return (
-          <div key={seatId} className={`${styles.seatCard} ${occupied ? styles.seatOccupied : ''}`}>
+          <div key={`${seatId}:${seat.playerId ?? 'open'}`} className={`${styles.seatCard} ${occupied ? styles.seatOccupied : ''}`}>
             <div className={styles.roleTile} aria-hidden="true">
               {role.icon}
             </div>

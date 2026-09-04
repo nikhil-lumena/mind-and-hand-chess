@@ -74,7 +74,12 @@
 
 .myTurn {
   border-color: var(--gold);
-  box-shadow: 0 5px 0 var(--gold-deep);
+  animation: turnGlow 1.4s ease-in-out infinite alternate;
+}
+
+@keyframes turnGlow {
+  from { box-shadow: 0 5px 0 var(--gold-deep), 0 0 0 0 rgba(255, 197, 61, 0.35); }
+  to { box-shadow: 0 5px 0 var(--gold-deep), 0 0 0 10px rgba(255, 197, 61, 0); }
 }
 
 .teamBadge {

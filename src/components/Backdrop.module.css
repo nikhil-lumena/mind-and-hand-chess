@@ -1,0 +1,33 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.piece {
+  position: absolute;
+  bottom: -140px;
+  color: #fff;
+  opacity: 0;
+  line-height: 1;
+  animation-name: drift;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes drift {
+  0% { transform: translateY(0) rotate(-12deg); opacity: 0; }
+  8% { opacity: 0.06; }
+  50% { transform: translateY(-60vh) rotate(6deg); opacity: 0.07; }
+  92% { opacity: 0.05; }
+  100% { transform: translateY(-120vh) rotate(-10deg); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .piece {
+    display: none;
+  }
+}

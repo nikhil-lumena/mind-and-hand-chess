@@ -107,105 +107,6 @@
   font-size: 1rem;
 }
 
-/* ---- Sync toast ---- */
-
-.toast {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 20px 14px 14px;
-  border-radius: var(--r-lg);
-  background: var(--card);
-  border: 3px solid var(--toast-color);
-  box-shadow: 0 6px 0 var(--toast-edge), 0 20px 40px rgba(0, 0, 0, 0.45);
-  pointer-events: none;
-  z-index: 5;
-  max-width: calc(100% - 32px);
-  animation: toastIn 0.35s var(--ease-spring) both, toastOut 0.3s ease-in 2.1s forwards;
-}
-
-.toastSuccess {
-  --toast-color: var(--green);
-  --toast-edge: var(--green-deep);
-}
-
-.toastFail {
-  --toast-color: var(--red);
-  --toast-edge: var(--red-deep);
-}
-
-@keyframes toastIn {
-  from { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
-  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-}
-
-@keyframes toastOut {
-  to { opacity: 0; transform: translate(-50%, -62%) scale(0.95); }
-}
-
-.toastIcon {
-  width: 48px;
-  height: 48px;
-  flex-shrink: 0;
-  display: grid;
-  place-items: center;
-  border-radius: 14px;
-  font-size: 1.5rem;
-  font-weight: 900;
-  color: var(--ink);
-  background: var(--toast-color);
-  box-shadow: 0 3px 0 var(--toast-edge);
-}
-
-.toastSuccess .toastIcon {
-  animation: iconPop 0.5s var(--ease-spring) both;
-}
-
-.toastFail .toastIcon {
-  color: #fff;
-  animation: iconShake 0.5s ease both;
-}
-
-@keyframes iconPop {
-  0% { transform: scale(0.4) rotate(-20deg); }
-  60% { transform: scale(1.15) rotate(6deg); }
-  100% { transform: scale(1) rotate(0); }
-}
-
-@keyframes iconShake {
-  0%, 100% { transform: translateX(0); }
-  20% { transform: translateX(-6px); }
-  40% { transform: translateX(6px); }
-  60% { transform: translateX(-3px); }
-  80% { transform: translateX(3px); }
-}
-
-.toastBody {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.toastBody strong {
-  font-family: var(--font-display, var(--font-display-fallback));
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--toast-color);
-}
-
-.toastDetail {
-  font-size: 0.82rem;
-  color: var(--text-2);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 /* ---- Responsive ---- */
 
 @media (max-width: 1080px) {
@@ -231,7 +132,4 @@
       'right';
   }
 
-  .toastDetail {
-    white-space: normal;
-  }
 }

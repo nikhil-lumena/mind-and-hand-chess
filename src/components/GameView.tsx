@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useGame } from '@/context/GameContext';
-import { useSound } from '@/context/SoundContext';
 import { ChessBoard } from './ChessBoard';
 import { InfoPanel } from './InfoPanel';
 import { TurnBanner } from './TurnBanner';
 import { GameOverOverlay } from './GameOverOverlay';
 import { ResetGameButton } from './ResetGameButton';
+import { Countdown } from './Countdown';
 import { seatLabel, seatRole } from '@/shared/types';
 import styles from './GameView.module.css';
 
@@ -33,7 +33,6 @@ export function GameView() {
         </div>
         <div className={styles.boardWrapper}>
           <ChessBoard />
-          <SyncToast />
         </div>
         <div className={styles.rightPanel}>
           <InfoPanel side="right" />
@@ -57,47 +56,8 @@ export function GameView() {
         </div>
       </div>
 
+      <Countdown />
       {isGameOver && <GameOverOverlay />}
-    </div>
-  );
-}
-
-const TOAST_DURATION_MS = 2400;
-
-function SyncToast() {
-  const { syncEvent } = useSound();
-  const [visibleId, setVisibleId] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (!syncEvent) return;
-    setVisibleId(syncEvent.id);
-    const timer = window.setTimeout(() => setVisibleId(null), TOAST_DURATION_MS);
-    return () => window.clearTimeout(timer);
-  }, [syncEvent]);
-
-  if (!syncEvent || visibleId !== syncEvent.id) return null;
-
-  const { reveal } = syncEvent;
-  const team = reveal.team === 'white' ? 'White' : 'Black';
-
-  return (
-    <div
-      key={syncEvent.id}
-      className={`${styles.toast} ${reveal.inSync ? styles.toastSuccess : styles.toastFail}`}
-      role="status"
-      aria-live="polite"
-    >
-      <span className={styles.toastIcon} aria-hidden="true">
-        {reveal.inSync ? '✓' : '✕'}
-      </span>
-      <div className={styles.toastBody}>
-        <strong>{reveal.inSync ? 'In sync!' : 'Out of sync'}</strong>
-        <span className={styles.toastDetail}>
-          {reveal.inSync
-            ? `${team} Mind and Hand both chose ${reveal.mindTo}`
-            : `${team} Mind wanted ${reveal.mindTo}, Hand played ${reveal.handTo}`}
-        </span>
-      </div>
     </div>
   );
 }

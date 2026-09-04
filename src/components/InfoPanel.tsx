@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import { useGame } from '@/context/GameContext';
+import { useSound } from '@/context/SoundContext';
 import { MoveRecord, SEAT_IDS, seatTeam, seatRole, SyncTally, TeamColor } from '@/shared/types';
 import styles from './InfoPanel.module.css';
 
@@ -88,13 +89,19 @@ function PlayersSection() {
   );
 }
 
-function SyncBar({ team, tally }: { team: TeamColor; tally: SyncTally }) {
+function SyncBar({ team, tally, streak }: { team: TeamColor; tally: SyncTally; streak: number }) {
   const pct = tally.total === 0 ? 0 : Math.round((tally.synced / tally.total) * 100);
+  const hot = streak >= 3;
   return (
     <div className={styles.syncRow}>
       <div className={styles.syncMeta}>
         <span className={styles.syncLabel}>
           <span aria-hidden="true">{team === 'white' ? '♔' : '♚'}</span> {team === 'white' ? 'White' : 'Black'}
+          {streak >= 2 && (
+            <span className={`${styles.streak} ${hot ? styles.streakHot : ''}`} title={`${streak} in a row`}>
+              <span aria-hidden="true">🔥</span>x{streak}
+            </span>
+          )}
         </span>
         <span className={styles.syncValue}>
           {tally.total === 0 ? '—' : `${tally.synced}/${tally.total}`}
@@ -102,7 +109,7 @@ function SyncBar({ team, tally }: { team: TeamColor; tally: SyncTally }) {
         </span>
       </div>
       <div className={styles.syncTrack} role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
-        <div className={styles.syncFill} style={{ width: `${pct}%` }} />
+        <div className={`${styles.syncFill} ${hot ? styles.syncFillHot : ''}`} style={{ width: `${pct}%` }} />
       </div>
     </div>
   );
@@ -110,13 +117,14 @@ function SyncBar({ team, tally }: { team: TeamColor; tally: SyncTally }) {
 
 function SyncTallySection() {
   const { gameState } = useGame();
+  const { streaks } = useSound();
   const { white, black } = gameState.syncTally;
   const reveal = gameState.lastSyncReveal;
 
   return (
     <Section title="Mind ↔ Hand sync" icon="🔗" accent={styles.syncSection}>
-      <SyncBar team="white" tally={white} />
-      <SyncBar team="black" tally={black} />
+      <SyncBar team="white" tally={white} streak={streaks.white} />
+      <SyncBar team="black" tally={black} streak={streaks.black} />
       {reveal && (
         <div className={`${styles.syncRevealBadge} ${reveal.inSync ? styles.syncBadgeGreen : styles.syncBadgeRed}`}>
           <span aria-hidden="true">{reveal.inSync ? '✓' : '✕'}</span>
