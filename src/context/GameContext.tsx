@@ -17,6 +17,8 @@ interface GameContextValue {
   setMindIntent: (to: string) => void;
   makeMove: (from: string, to: string, promotion?: string) => void;
   newGame: () => void;
+  /** Wipes the board and empties every seat, sending everyone back to the lobby. */
+  resetGame: () => Promise<void>;
   toggleSyncMode: (enabled: boolean) => void;
   error: string | null;
   clearError: () => void;
@@ -201,7 +203,20 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   );
 
   const newGame = useCallback(() => {
-    apiCall('/api/game/new').catch((err) => setError(err.message));
+    apiCall('/api/game/new', {}).catch((err) => setError(err.message));
+  }, []);
+
+  const resetGame = useCallback(async () => {
+    setError(null);
+    try {
+      await apiCall('/api/game/reset', {});
+      setMySeatId(null);
+      const state = await apiCall('/api/game/state');
+      setGameState(state);
+      syncMySeat(state, clientIdRef.current);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Reset failed');
+    }
   }, []);
 
   const toggleSyncMode = useCallback((enabled: boolean) => {
@@ -224,6 +239,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         setMindIntent: setMindIntentAction,
         makeMove,
         newGame,
+        resetGame,
         toggleSyncMode,
         error,
         clearError,

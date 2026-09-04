@@ -5,11 +5,11 @@
   flex-direction: column;
   align-items: center;
   gap: 18px;
-  animation: fadeIn 0.4s var(--ease-out) both;
+  animation: fadeIn 0.35s var(--ease-out) both;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -17,12 +17,14 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--accent-red);
-  font-size: 0.85rem;
-  padding: 10px 14px;
-  background: rgba(248, 113, 113, 0.1);
-  border: 1px solid rgba(248, 113, 113, 0.3);
-  border-radius: var(--radius-md);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 11px 14px;
+  background: var(--red);
+  border: none;
+  border-radius: var(--r-md);
+  box-shadow: 0 4px 0 var(--red-deep);
   width: 100%;
   max-width: 720px;
   text-align: left;
@@ -30,10 +32,10 @@
 
 .errorDismiss {
   margin-left: auto;
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  opacity: 0.7;
+  letter-spacing: 0.06em;
+  opacity: 0.8;
 }
 
 .gameLayout {
@@ -68,39 +70,41 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 14px;
   padding: 4px 0;
   flex-wrap: wrap;
+}
+
+.bottomActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .roleBadge {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 16px;
-  border-radius: 999px;
-  background: rgba(245, 196, 81, 0.1);
-  border: 1px solid rgba(245, 196, 81, 0.3);
-  color: var(--accent-gold);
-  font-size: 0.85rem;
+  height: 40px;
+  padding: 0 16px 0 6px;
+  border-radius: 14px;
+  background: var(--gold);
+  box-shadow: 0 3px 0 var(--gold-deep);
+  color: var(--ink);
+  font-family: var(--font-display, var(--font-display-fallback));
+  font-size: 0.95rem;
   font-weight: 600;
 }
 
-.leaveBtn {
-  padding: 8px 16px;
-  border-radius: 999px;
-  border: 1px solid var(--border-subtle);
-  background: var(--bg-elevated);
-  color: var(--text-secondary);
-  font-size: 0.8rem;
-  font-weight: 500;
-  transition: all 0.15s;
-}
-
-.leaveBtn:hover {
-  background: rgba(248, 113, 113, 0.12);
-  border-color: rgba(248, 113, 113, 0.35);
-  color: var(--accent-red);
+.roleBadgeIcon {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: rgba(27, 29, 58, 0.12);
+  font-size: 1rem;
 }
 
 /* ---- Sync toast ---- */
@@ -113,62 +117,69 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 14px 20px 14px 16px;
-  border-radius: var(--radius-lg);
-  background: rgba(11, 15, 26, 0.88);
-  border: 1px solid var(--border-strong);
-  box-shadow: var(--shadow-lg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  padding: 14px 20px 14px 14px;
+  border-radius: var(--r-lg);
+  background: var(--card);
+  border: 3px solid var(--toast-color);
+  box-shadow: 0 6px 0 var(--toast-edge), 0 20px 40px rgba(0, 0, 0, 0.45);
   pointer-events: none;
   z-index: 5;
   max-width: calc(100% - 32px);
   animation: toastIn 0.35s var(--ease-spring) both, toastOut 0.3s ease-in 2.1s forwards;
 }
 
+.toastSuccess {
+  --toast-color: var(--green);
+  --toast-edge: var(--green-deep);
+}
+
+.toastFail {
+  --toast-color: var(--red);
+  --toast-edge: var(--red-deep);
+}
+
 @keyframes toastIn {
-  from { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
   to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 }
 
 @keyframes toastOut {
-  to { opacity: 0; transform: translate(-50%, -60%) scale(0.95); }
+  to { opacity: 0; transform: translate(-50%, -62%) scale(0.95); }
 }
 
 .toastIcon {
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   flex-shrink: 0;
   display: grid;
   place-items: center;
-  border-radius: 50%;
-  font-size: 1.3rem;
-  font-weight: 800;
-  color: var(--text-inverse);
+  border-radius: 14px;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--ink);
+  background: var(--toast-color);
+  box-shadow: 0 3px 0 var(--toast-edge);
 }
 
 .toastSuccess .toastIcon {
-  background: var(--accent-green);
-  box-shadow: 0 0 22px rgba(52, 211, 153, 0.6);
   animation: iconPop 0.5s var(--ease-spring) both;
 }
 
 .toastFail .toastIcon {
-  background: var(--accent-red);
-  box-shadow: 0 0 22px rgba(248, 113, 113, 0.55);
+  color: #fff;
   animation: iconShake 0.5s ease both;
 }
 
 @keyframes iconPop {
-  0% { transform: scale(0.4); }
-  60% { transform: scale(1.15); }
-  100% { transform: scale(1); }
+  0% { transform: scale(0.4) rotate(-20deg); }
+  60% { transform: scale(1.15) rotate(6deg); }
+  100% { transform: scale(1) rotate(0); }
 }
 
 @keyframes iconShake {
   0%, 100% { transform: translateX(0); }
-  20% { transform: translateX(-5px); }
-  40% { transform: translateX(5px); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
   60% { transform: translateX(-3px); }
   80% { transform: translateX(3px); }
 }
@@ -181,21 +192,15 @@
 }
 
 .toastBody strong {
-  font-family: var(--font-display, var(--font-sans-fallback));
-  font-size: 1.05rem;
-}
-
-.toastSuccess strong {
-  color: var(--accent-green);
-}
-
-.toastFail strong {
-  color: var(--accent-red);
+  font-family: var(--font-display, var(--font-display-fallback));
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--toast-color);
 }
 
 .toastDetail {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
+  font-size: 0.82rem;
+  color: var(--text-2);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

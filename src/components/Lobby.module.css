@@ -1,62 +1,36 @@
 .lobby {
   width: 100%;
   max-width: 720px;
-  animation: rise 0.45s var(--ease-out) both;
+  animation: rise 0.4s var(--ease-out) both;
 }
 
 @keyframes rise {
-  from { opacity: 0; transform: translateY(14px); }
+  from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 .card {
-  position: relative;
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-xl);
-  padding: clamp(24px, 4vw, 44px);
-  box-shadow: var(--shadow-lg);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  overflow: hidden;
-}
-
-/* Soft top highlight line */
-.card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 10%;
-  right: 10%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  background: var(--card);
+  border: 3px solid var(--card-edge);
+  border-radius: var(--r-xl);
+  padding: clamp(22px, 4vw, 36px);
+  box-shadow: var(--shadow-card);
 }
 
 .cardHeader {
   text-align: center;
-  margin-bottom: 28px;
-}
-
-.eyebrow {
-  display: inline-block;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--accent-gold);
-  margin-bottom: 10px;
+  margin-bottom: 22px;
 }
 
 .heading {
-  font-size: clamp(1.6rem, 4vw, 2.1rem);
-  font-weight: 700;
-  margin-bottom: 8px;
+  font-size: clamp(1.8rem, 4.5vw, 2.4rem);
+  margin-bottom: 6px;
 }
 
 .description {
-  color: var(--text-secondary);
-  font-size: 0.92rem;
-  line-height: 1.55;
+  color: var(--text-2);
+  font-size: 0.95rem;
+  line-height: 1.5;
   max-width: 440px;
   margin: 0 auto;
 }
@@ -65,82 +39,79 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 20px;
+  gap: 6px;
+  margin-bottom: 18px;
 }
 
 .nameLabel {
-  font-size: 0.72rem;
+  font-family: var(--font-display, var(--font-display-fallback));
+  font-size: 0.9rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--text-2);
 }
 
 .nameField {
   position: relative;
-  width: min(320px, 100%);
+  width: min(340px, 100%);
 }
 
 .nameInput {
   width: 100%;
-  padding: 12px 58px 12px 16px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-strong);
-  background: rgba(0, 0, 0, 0.25);
-  color: var(--text-primary);
-  font-size: 1rem;
+  padding: 13px 64px 13px 16px;
+  border-radius: 16px;
+  border: 3px solid var(--card-edge);
+  background: var(--bg-deep);
+  color: var(--text);
+  font-size: 1.05rem;
+  font-weight: 700;
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  box-shadow: inset 0 3px 0 rgba(0, 0, 0, 0.35);
+  transition: border-color 0.15s;
 }
 
 .nameInput::placeholder {
-  color: var(--text-muted);
-}
-
-.nameInput:hover {
-  border-color: rgba(255, 255, 255, 0.24);
+  color: var(--text-3);
+  font-weight: 600;
 }
 
 .nameInput:focus {
-  border-color: var(--accent-gold);
-  box-shadow: 0 0 0 3px rgba(245, 196, 81, 0.2);
-  background: rgba(0, 0, 0, 0.35);
+  border-color: var(--gold);
 }
 
 .nameCount {
   position: absolute;
-  right: 12px;
+  right: 14px;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 0.7rem;
-  font-family: var(--font-mono, var(--font-mono-fallback));
-  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--text-3);
   pointer-events: none;
 }
 
 .error {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 8px;
   width: 100%;
-  color: var(--accent-red);
-  font-size: 0.85rem;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
   margin-bottom: 16px;
-  padding: 10px 14px;
-  background: rgba(248, 113, 113, 0.1);
-  border: 1px solid rgba(248, 113, 113, 0.3);
-  border-radius: var(--radius-md);
+  padding: 11px 14px;
+  background: var(--red);
+  border: none;
+  border-radius: var(--r-md);
+  box-shadow: 0 4px 0 var(--red-deep);
   text-align: left;
 }
 
 .errorDismiss {
   margin-left: auto;
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  opacity: 0.7;
+  letter-spacing: 0.06em;
+  opacity: 0.8;
 }
 
 .seatProgress {
@@ -148,37 +119,39 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
-.seatDots {
+.seatPips {
   display: flex;
   gap: 6px;
 }
 
-.seatDot {
-  width: 22px;
-  height: 6px;
+.seatPip {
+  width: 26px;
+  height: 10px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--bg-deep);
+  box-shadow: inset 0 2px 0 rgba(0, 0, 0, 0.4);
   transition: background 0.3s, box-shadow 0.3s;
 }
 
-.seatDotFilled {
-  background: var(--accent-green);
-  box-shadow: 0 0 10px rgba(52, 211, 153, 0.5);
+.seatPipFilled {
+  background: var(--green);
+  box-shadow: 0 2px 0 var(--green-deep);
 }
 
 .seatProgressText {
-  font-size: 0.78rem;
-  color: var(--text-secondary);
-  font-weight: 500;
+  font-family: var(--font-display, var(--font-display-fallback));
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-2);
 }
 
 .teamsRow {
   display: flex;
   align-items: stretch;
-  gap: 14px;
+  gap: 12px;
   justify-content: center;
 }
 
@@ -186,17 +159,23 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-display, var(--font-sans-fallback));
-  font-size: 0.85rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  color: var(--text-muted);
   flex-shrink: 0;
   width: 40px;
 }
 
 .vs span {
-  padding: 6px 0;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-family: var(--font-display, var(--font-display-fallback));
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ink);
+  background: var(--gold);
+  box-shadow: 0 3px 0 var(--gold-deep);
+  transform: rotate(-8deg);
 }
 
 .teamColumn {
@@ -205,18 +184,31 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 14px;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-subtle);
-  background: rgba(0, 0, 0, 0.14);
+  padding: 12px;
+  border-radius: var(--r-lg);
+  background: var(--col-bg);
+  color: var(--col-fg);
+  box-shadow: 0 5px 0 var(--col-edge);
 }
 
 .whiteTeam {
-  --team-tint: 243, 233, 214;
+  --col-bg: var(--cream);
+  --col-edge: var(--cream-deep);
+  --col-fg: var(--cream-ink);
+  --col-fg-2: rgba(59, 42, 18, 0.65);
+  --col-tile: rgba(59, 42, 18, 0.08);
+  --col-tile-edge: rgba(59, 42, 18, 0.18);
+  --col-seat: rgba(255, 255, 255, 0.55);
 }
 
 .blackTeam {
-  --team-tint: 150, 160, 205;
+  --col-bg: var(--slate);
+  --col-edge: var(--slate-deep);
+  --col-fg: #10112b;
+  --col-fg-2: rgba(16, 17, 43, 0.65);
+  --col-tile: rgba(16, 17, 43, 0.1);
+  --col-tile-edge: rgba(16, 17, 43, 0.22);
+  --col-seat: rgba(255, 255, 255, 0.28);
 }
 
 .teamLabel {
@@ -224,61 +216,42 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  font-weight: 700;
-  margin-bottom: 4px;
-  padding: 8px;
-  border-radius: var(--radius-sm);
-  color: rgb(var(--team-tint));
-  background: rgba(var(--team-tint), 0.1);
+  font-size: 1.15rem;
+  padding: 4px 0 6px;
+  color: var(--col-fg);
 }
 
 .teamGlyph {
-  font-size: 1.1rem;
+  font-size: 1.4rem;
   line-height: 1;
 }
 
 .seatCard {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px;
-  border-radius: var(--radius-md);
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-subtle);
-  transition: background 0.2s, border-color 0.2s, transform 0.2s var(--ease-out), box-shadow 0.2s;
-}
-
-.seatCard:hover {
-  background: var(--bg-elevated-hover);
-  border-color: var(--border-strong);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-sm);
+  gap: 10px;
+  padding: 10px;
+  border-radius: var(--r-md);
+  background: var(--col-seat);
+  box-shadow: 0 3px 0 var(--col-tile-edge);
+  transition: transform 0.15s var(--ease-out);
 }
 
 .seatOccupied {
-  border-color: rgba(52, 211, 153, 0.3);
-  background: rgba(52, 211, 153, 0.07);
-}
-
-.seatOccupied:hover {
-  transform: none;
-  box-shadow: none;
-  background: rgba(52, 211, 153, 0.09);
+  background: var(--green);
+  box-shadow: 0 3px 0 var(--green-deep);
+  color: var(--ink);
 }
 
 .roleTile {
-  width: 40px;
-  height: 40px;
+  width: 46px;
+  height: 46px;
   flex-shrink: 0;
   display: grid;
   place-items: center;
-  border-radius: 10px;
-  font-size: 1.25rem;
-  background: rgba(var(--team-tint), 0.1);
-  border: 1px solid rgba(var(--team-tint), 0.15);
+  border-radius: 13px;
+  font-size: 1.5rem;
+  background: var(--col-tile);
 }
 
 .seatInfo {
@@ -287,113 +260,102 @@
 }
 
 .roleName {
-  font-size: 0.86rem;
+  font-family: var(--font-display, var(--font-display-fallback));
+  font-size: 1rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--col-fg);
+}
+
+.seatOccupied .roleName {
+  color: var(--ink);
 }
 
 .playerName {
-  font-size: 0.78rem;
-  color: var(--text-secondary);
-  font-weight: 500;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--col-fg);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+.seatOccupied .playerName {
+  color: rgba(27, 29, 58, 0.85);
+}
+
 .openSeat {
-  color: var(--text-muted);
-  font-weight: 400;
+  color: var(--col-fg-2);
+  font-weight: 600;
 }
 
 .takenBadge {
-  width: 26px;
-  height: 26px;
+  width: 30px;
+  height: 30px;
   display: grid;
   place-items: center;
   border-radius: 50%;
-  font-size: 0.8rem;
-  font-weight: 800;
-  color: var(--accent-green);
-  background: rgba(52, 211, 153, 0.15);
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: var(--green);
+  background: var(--ink);
 }
 
 .joinBtn {
-  padding: 8px 16px;
-  border-radius: var(--radius-sm);
-  border: none;
-  background: linear-gradient(160deg, var(--accent-gold), var(--accent-gold-deep));
-  color: var(--text-inverse);
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  box-shadow: 0 4px 14px -6px rgba(245, 196, 81, 0.7);
-  transition: transform 0.15s var(--ease-out), box-shadow 0.15s, opacity 0.15s;
-}
-
-.joinBtn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 18px -6px rgba(245, 196, 81, 0.8);
-}
-
-.joinBtn:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-.joinBtn:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
-  box-shadow: none;
+  flex-shrink: 0;
 }
 
 .syncCard {
   display: flex;
   align-items: center;
   gap: 14px;
-  margin-top: 22px;
-  padding: 16px;
-  border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, rgba(167, 139, 250, 0.1), rgba(91, 157, 255, 0.06));
-  border: 1px solid rgba(167, 139, 250, 0.25);
+  margin-top: 18px;
+  padding: 14px 16px;
+  border-radius: var(--r-lg);
+  background: var(--card-2);
+  box-shadow: 0 5px 0 var(--card-shadow);
 }
 
 .syncIcon {
-  width: 40px;
-  height: 40px;
+  width: 46px;
+  height: 46px;
   flex-shrink: 0;
   display: grid;
   place-items: center;
-  border-radius: 10px;
-  font-size: 1.2rem;
-  background: rgba(167, 139, 250, 0.15);
+  border-radius: 13px;
+  font-size: 1.4rem;
+  background: var(--purple);
+  box-shadow: 0 3px 0 var(--purple-deep);
 }
 
 .syncText {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
 }
 
 .syncText strong {
-  font-size: 0.92rem;
-  color: var(--text-primary);
+  font-family: var(--font-display, var(--font-display-fallback));
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text);
 }
 
 .syncDesc {
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   line-height: 1.45;
-  color: var(--text-secondary);
+  color: var(--text-2);
 }
 
 .toggle {
   position: relative;
-  width: 48px;
-  height: 26px;
+  width: 58px;
+  height: 32px;
   border-radius: 999px;
   border: none;
-  background: rgba(255, 255, 255, 0.14);
-  transition: background 0.25s;
+  background: var(--bg-deep);
+  box-shadow: inset 0 3px 0 rgba(0, 0, 0, 0.4);
+  transition: background 0.2s;
   flex-shrink: 0;
 }
 
@@ -403,38 +365,43 @@
 }
 
 .toggleOn {
-  background: linear-gradient(135deg, var(--accent-violet), var(--accent-blue));
-  box-shadow: 0 0 14px rgba(167, 139, 250, 0.45);
+  background: var(--green);
 }
 
 .toggleKnob {
   position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 20px;
-  height: 20px;
+  top: 4px;
+  left: 4px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  background: white;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-  transition: transform 0.25s var(--ease-spring);
+  background: #fff;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+  transition: transform 0.22s var(--ease-spring);
 }
 
 .toggleOn .toggleKnob {
-  transform: translateX(22px);
+  transform: translateX(26px);
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 18px;
+  padding: 12px 14px;
+  border-radius: var(--r-md);
+  background: var(--bg-deep);
 }
 
 .statusNote {
+  flex: 1;
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 8px;
-  color: var(--accent-gold);
-  font-size: 0.85rem;
-  font-weight: 500;
-  margin-top: 18px;
-  padding: 10px;
-  border-radius: var(--radius-md);
-  background: rgba(245, 196, 81, 0.08);
+  color: var(--text-2);
+  font-size: 0.88rem;
+  line-height: 1.4;
 }
 
 @media (max-width: 600px) {
@@ -444,20 +411,7 @@
 
   .vs {
     width: auto;
-    height: 20px;
-    position: relative;
-  }
-
-  .vs::before,
-  .vs::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border-subtle);
-  }
-
-  .vs span {
-    padding: 0 12px;
+    height: 40px;
   }
 
   .syncCard {
@@ -465,10 +419,20 @@
   }
 
   .syncText {
-    flex-basis: calc(100% - 54px);
+    flex-basis: calc(100% - 60px);
   }
 
   .toggle {
     margin-left: auto;
+  }
+
+  .footer {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .statusNote {
+    justify-content: center;
   }
 }

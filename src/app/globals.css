@@ -1,50 +1,55 @@
 :root {
   color-scheme: dark;
 
-  --bg-0: #0b0f1a;
-  --bg-1: #10162a;
-  --bg-2: #161d33;
-  --bg-card: rgba(20, 27, 48, 0.78);
-  --bg-card-solid: #141b30;
-  --bg-elevated: rgba(255, 255, 255, 0.04);
-  --bg-elevated-hover: rgba(255, 255, 255, 0.07);
+  /* Surfaces */
+  --bg: #1b1d3a;
+  --bg-deep: #13152b;
+  --card: #262a52;
+  --card-2: #313666;
+  --card-edge: #3d4379;
+  --card-shadow: #0f1129;
 
-  --text-primary: #eef1f8;
-  --text-secondary: #a4adc3;
-  --text-muted: #6d778d;
-  --text-inverse: #0b0f1a;
+  /* Text */
+  --text: #f7f5ff;
+  --text-2: #bdbbdf;
+  --text-3: #8b89b4;
+  --ink: #1b1d3a;
 
-  --accent-gold: #f5c451;
-  --accent-gold-deep: #e0a52a;
-  --accent-blue: #5b9dff;
-  --accent-violet: #a78bfa;
-  --accent-green: #34d399;
-  --accent-red: #f87171;
+  /* Candy palette */
+  --gold: #ffc53d;
+  --gold-deep: #c98d0c;
+  --green: #3ddc84;
+  --green-deep: #1f9e5a;
+  --red: #ff5d6c;
+  --red-deep: #c4303f;
+  --blue: #4cc9f0;
+  --blue-deep: #2288ad;
+  --purple: #b48cff;
+  --purple-deep: #7a52d9;
 
-  --white-team: #f3e9d6;
-  --black-team: #b7bdd6;
+  /* Teams */
+  --cream: #fff1cf;
+  --cream-deep: #d9b97a;
+  --cream-ink: #3b2a12;
+  --slate: #8e97ff;
+  --slate-deep: #5b63c9;
 
-  --board-light: #edd9b9;
-  --board-dark: #a9784f;
+  --board-light: #f0d9b5;
+  --board-dark: #b58863;
 
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.16);
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-xl: 26px;
 
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 18px;
-  --radius-xl: 24px;
-
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.25);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
-  --shadow-lg: 0 24px 64px -16px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
-  --glow-gold: 0 0 0 1px rgba(245, 196, 81, 0.35), 0 0 28px rgba(245, 196, 81, 0.18);
+  --shadow-card: 0 6px 0 var(--card-shadow);
+  --shadow-pop: 0 8px 0 var(--card-shadow), 0 24px 48px rgba(0, 0, 0, 0.45);
 
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
-  --font-sans-fallback: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-mono-fallback: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --font-sans-fallback: 'Nunito', ui-rounded, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display-fallback: 'Fredoka', 'Nunito', ui-rounded, ui-sans-serif, system-ui, sans-serif;
 }
 
 * {
@@ -56,52 +61,36 @@
 html {
   height: 100%;
   -webkit-text-size-adjust: 100%;
-  text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 body {
   min-height: 100%;
   font-family: var(--font-sans, var(--font-sans-fallback));
-  color: var(--text-primary);
-  background-color: var(--bg-0);
+  font-weight: 600;
+  color: var(--text);
+  background-color: var(--bg);
+  /* Faint checkerboard — a wink at the board, without the "AI glow" look. */
   background-image:
-    radial-gradient(1100px 600px at 8% -10%, rgba(245, 196, 81, 0.16), transparent 60%),
-    radial-gradient(900px 600px at 100% 110%, rgba(91, 157, 255, 0.18), transparent 60%),
-    radial-gradient(700px 500px at 60% 40%, rgba(167, 139, 250, 0.08), transparent 65%),
-    linear-gradient(180deg, var(--bg-1) 0%, var(--bg-0) 100%);
-  background-attachment: fixed;
+    linear-gradient(45deg, rgba(255, 255, 255, 0.03) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.03) 75%),
+    linear-gradient(45deg, rgba(255, 255, 255, 0.03) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.03) 75%);
+  background-size: 56px 56px;
+  background-position: 0 0, 28px 28px;
   overflow-x: hidden;
-  position: relative;
-}
-
-/* Subtle dot grid that fades toward the edges. */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
-  background-size: 28px 28px;
-  mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.9) 0%, transparent 75%);
-  -webkit-mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.9) 0%, transparent 75%);
-  z-index: 0;
-}
-
-body > * {
-  position: relative;
-  z-index: 1;
 }
 
 h1, h2, h3, h4 {
-  font-family: var(--font-display, var(--font-sans, var(--font-sans-fallback)));
-  letter-spacing: -0.015em;
+  font-family: var(--font-display, var(--font-display-fallback));
+  font-weight: 700;
+  letter-spacing: 0.005em;
 }
 
 button {
   cursor: pointer;
   font-family: inherit;
   color: inherit;
+  -webkit-tap-highlight-color: transparent;
 }
 
 input {
@@ -109,18 +98,18 @@ input {
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent-blue);
-  outline-offset: 2px;
-  border-radius: 6px;
+  outline: 3px solid var(--blue);
+  outline-offset: 3px;
+  border-radius: 8px;
 }
 
 ::selection {
-  background: rgba(245, 196, 81, 0.35);
+  background: rgba(255, 197, 61, 0.4);
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+  scrollbar-color: var(--card-edge) transparent;
 }
 
 *::-webkit-scrollbar {
@@ -129,12 +118,97 @@ input {
 }
 
 *::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.14);
+  background: var(--card-edge);
   border-radius: 999px;
 }
 
 *::-webkit-scrollbar-track {
   background: transparent;
+}
+
+/* ---------------------------------------------------------------------------
+   Chunky "pressable" buttons, shared across components.
+   --------------------------------------------------------------------------- */
+
+.btn {
+  --btn-bg: var(--card-2);
+  --btn-edge: var(--card-shadow);
+  --btn-fg: var(--text);
+  --btn-lift: 4px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border: none;
+  border-radius: 16px;
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  font-family: var(--font-display, var(--font-display-fallback));
+  font-weight: 600;
+  font-size: 1.02rem;
+  line-height: 1.1;
+  white-space: nowrap;
+  user-select: none;
+  box-shadow: 0 var(--btn-lift) 0 var(--btn-edge);
+  transform: translateY(0);
+  transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.15s ease, opacity 0.15s ease;
+}
+
+.btn:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(var(--btn-lift));
+  box-shadow: 0 0 0 var(--btn-edge);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  --btn-bg: var(--gold);
+  --btn-edge: var(--gold-deep);
+  --btn-fg: var(--ink);
+}
+
+.btn-success {
+  --btn-bg: var(--green);
+  --btn-edge: var(--green-deep);
+  --btn-fg: var(--ink);
+}
+
+.btn-danger {
+  --btn-bg: var(--red);
+  --btn-edge: var(--red-deep);
+  --btn-fg: #fff;
+}
+
+.btn-purple {
+  --btn-bg: var(--purple);
+  --btn-edge: var(--purple-deep);
+  --btn-fg: var(--ink);
+}
+
+.btn-ghost {
+  --btn-bg: var(--card-2);
+  --btn-edge: var(--card-shadow);
+  --btn-fg: var(--text-2);
+}
+
+.btn-sm {
+  --btn-lift: 3px;
+  padding: 9px 16px;
+  font-size: 0.92rem;
+  border-radius: 13px;
+}
+
+.btn-block {
+  width: 100%;
 }
 
 @media (prefers-reduced-motion: reduce) {

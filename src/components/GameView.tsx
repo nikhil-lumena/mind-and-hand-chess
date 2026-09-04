@@ -7,6 +7,7 @@ import { ChessBoard } from './ChessBoard';
 import { InfoPanel } from './InfoPanel';
 import { TurnBanner } from './TurnBanner';
 import { GameOverOverlay } from './GameOverOverlay';
+import { ResetGameButton } from './ResetGameButton';
 import { seatLabel, seatRole } from '@/shared/types';
 import styles from './GameView.module.css';
 
@@ -41,16 +42,19 @@ export function GameView() {
 
       <div className={styles.bottomBar}>
         {mySeatId && (
-          <>
-            <span className={styles.roleBadge}>
-              <span aria-hidden="true">{myRole === 'mind' ? '🧠' : '🤚'}</span>
-              You are {seatLabel(mySeatId)}
+          <span className={styles.roleBadge}>
+            <span className={styles.roleBadgeIcon} aria-hidden="true">
+              {myRole === 'mind' ? '🧠' : '🤚'}
             </span>
-            <button type="button" className={styles.leaveBtn} onClick={leaveSeat}>
-              Leave seat
-            </button>
-          </>
+            You&apos;re {seatLabel(mySeatId)}
+          </span>
         )}
+        <div className={styles.bottomActions}>
+          <button type="button" className="btn btn-ghost btn-sm" onClick={leaveSeat}>
+            Leave seat
+          </button>
+          <ResetGameButton className="btn-sm" />
+        </div>
       </div>
 
       {isGameOver && <GameOverOverlay />}

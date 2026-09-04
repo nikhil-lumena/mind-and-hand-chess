@@ -14,19 +14,19 @@ export function GameOverOverlay() {
 
   let title = '';
   let subtitle = '';
-  let icon = '½';
+  let icon = '🤝';
   let winner: TeamColor | null = null;
 
   if (gameState.status === 'checkmate') {
     winner = gameState.winner!;
-    title = `${winner.charAt(0).toUpperCase() + winner.slice(1)} wins`;
+    title = `${winner.charAt(0).toUpperCase() + winner.slice(1)} wins!`;
     subtitle = 'Checkmate';
-    icon = winner === 'white' ? '♔' : '♚';
+    icon = '🏆';
   } else if (gameState.status === 'stalemate') {
-    title = 'Draw';
+    title = "It's a draw";
     subtitle = 'Stalemate — no legal moves';
   } else if (gameState.status === 'draw') {
-    title = 'Draw';
+    title = "It's a draw";
     subtitle = gameState.drawReason || 'Game drawn';
   }
 
@@ -49,14 +49,14 @@ export function GameOverOverlay() {
               <span aria-hidden="true">🔗</span> Mind ↔ Hand sync
             </div>
             <div className={styles.syncStats}>
-              <div className={styles.syncStat}>
+              <div className={`${styles.syncStat} ${styles.syncStatWhite}`}>
                 <span className={styles.syncStatTeam}>♔ White</span>
                 <span className={styles.syncStatValue}>{pct(white)}</span>
                 <span className={styles.syncStatDetail}>
                   {white.synced}/{white.total} moves
                 </span>
               </div>
-              <div className={styles.syncStat}>
+              <div className={`${styles.syncStat} ${styles.syncStatBlack}`}>
                 <span className={styles.syncStatTeam}>♚ Black</span>
                 <span className={styles.syncStatValue}>{pct(black)}</span>
                 <span className={styles.syncStatDetail}>
@@ -68,10 +68,10 @@ export function GameOverOverlay() {
         )}
 
         <div className={styles.actions}>
-          <button type="button" className={styles.newGameBtn} onClick={newGame}>
+          <button type="button" className="btn btn-primary btn-block" onClick={newGame}>
             Play again
           </button>
-          <button type="button" className={styles.secondaryBtn} onClick={leaveSeat}>
+          <button type="button" className="btn btn-ghost btn-block" onClick={leaveSeat}>
             Leave seat
           </button>
         </div>

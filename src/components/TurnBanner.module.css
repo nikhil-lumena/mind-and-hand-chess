@@ -2,16 +2,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 10px 12px 10px 14px;
-  border-radius: var(--radius-lg);
-  font-size: 0.9rem;
-  font-weight: 500;
-  border: 1px solid var(--border-subtle);
-  background: var(--bg-card);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  box-shadow: var(--shadow-md);
+  gap: 14px;
+  padding: 10px 12px;
+  border-radius: var(--r-lg);
+  font-size: 0.92rem;
+  background: var(--card);
+  border: 3px solid var(--card-edge);
+  box-shadow: 0 5px 0 var(--card-shadow);
   width: 100%;
   max-width: 820px;
   flex-wrap: wrap;
@@ -20,20 +17,27 @@
 
 .waiting {
   justify-content: center;
-  color: var(--text-secondary);
+  color: var(--text-2);
   padding: 14px 20px;
+}
+
+.waitingText {
+  font-family: var(--font-display, var(--font-display-fallback));
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text);
 }
 
 .waitingDots {
   display: inline-flex;
-  gap: 4px;
+  gap: 5px;
 }
 
 .waitingDots i {
-  width: 6px;
-  height: 6px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
-  background: var(--accent-gold);
+  background: var(--gold);
   animation: bounce 1.2s ease-in-out infinite;
 }
 
@@ -42,56 +46,63 @@
 
 @keyframes bounce {
   0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
-  30% { transform: translateY(-4px); opacity: 1; }
+  30% { transform: translateY(-6px); opacity: 1; }
 }
 
 .waitingCount {
-  font-family: var(--font-mono, var(--font-mono-fallback));
-  font-size: 0.78rem;
-  color: var(--text-muted);
-  padding: 3px 10px;
-  border-radius: 999px;
-  background: var(--bg-elevated);
+  font-family: var(--font-display, var(--font-display-fallback));
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ink);
+  padding: 4px 12px;
+  border-radius: 10px;
+  background: var(--gold);
+  box-shadow: 0 3px 0 var(--gold-deep);
 }
 
 .whiteTurn {
-  --turn-tint: 243, 233, 214;
+  --turn-bg: var(--cream);
+  --turn-edge: var(--cream-deep);
+  --turn-fg: var(--cream-ink);
 }
 
 .blackTurn {
-  --turn-tint: 150, 160, 205;
+  --turn-bg: var(--slate);
+  --turn-edge: var(--slate-deep);
+  --turn-fg: #10112b;
 }
 
 .myTurn {
-  border-color: rgba(245, 196, 81, 0.5);
-  box-shadow: var(--glow-gold), var(--shadow-md);
+  border-color: var(--gold);
+  box-shadow: 0 5px 0 var(--gold-deep);
 }
 
 .teamBadge {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 12px 6px 8px;
-  border-radius: 999px;
+  height: 38px;
+  padding: 0 14px 0 8px;
+  border-radius: 12px;
+  font-family: var(--font-display, var(--font-display-fallback));
   font-weight: 700;
-  font-size: 0.78rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgb(var(--turn-tint));
-  background: rgba(var(--turn-tint), 0.12);
-  border: 1px solid rgba(var(--turn-tint), 0.2);
+  font-size: 0.95rem;
+  text-transform: capitalize;
+  color: var(--turn-fg);
+  background: var(--turn-bg);
+  box-shadow: 0 3px 0 var(--turn-edge);
   flex-shrink: 0;
 }
 
 .teamGlyph {
-  font-size: 1.1rem;
+  font-size: 1.35rem;
   line-height: 1;
 }
 
 .steps {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   list-style: none;
   flex: 1;
   justify-content: center;
@@ -101,58 +112,57 @@
 .step {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 10px;
+  gap: 7px;
+  padding: 5px 12px 5px 6px;
   border-radius: 999px;
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  position: relative;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-3);
   transition: color 0.25s, background 0.25s;
   white-space: nowrap;
 }
 
 .step + .step::before {
-  content: '';
-  width: 14px;
-  height: 1px;
-  background: var(--border-strong);
-  margin-right: 4px;
+  content: '›';
+  font-size: 1.1rem;
+  color: var(--text-3);
+  margin-right: 2px;
+  margin-left: -6px;
 }
 
 .stepIcon {
-  width: 22px;
-  height: 22px;
+  width: 26px;
+  height: 26px;
   display: grid;
   place-items: center;
   border-radius: 50%;
-  font-size: 0.8rem;
-  background: var(--bg-elevated);
-  filter: grayscale(1) opacity(0.6);
+  font-size: 0.85rem;
+  background: var(--bg-deep);
+  filter: grayscale(1) opacity(0.5);
   transition: filter 0.25s, background 0.25s, transform 0.25s var(--ease-spring);
 }
 
 .stepDone {
-  color: var(--text-secondary);
+  color: var(--text-2);
 }
 
 .stepDone .stepIcon {
   filter: none;
-  color: var(--accent-green);
-  background: rgba(52, 211, 153, 0.15);
-  font-weight: 800;
+  color: var(--ink);
+  background: var(--green);
+  font-weight: 900;
 }
 
 .stepActive {
-  color: var(--text-primary);
-  background: rgba(245, 196, 81, 0.12);
-  font-weight: 600;
+  color: var(--ink);
+  background: var(--gold);
+  box-shadow: 0 3px 0 var(--gold-deep);
 }
 
 .stepActive .stepIcon {
   filter: none;
-  background: rgba(245, 196, 81, 0.2);
+  background: rgba(255, 255, 255, 0.55);
   transform: scale(1.1);
-  box-shadow: 0 0 12px rgba(245, 196, 81, 0.35);
 }
 
 .playerText {
@@ -163,7 +173,9 @@
 }
 
 .playerName {
+  font-family: var(--font-display, var(--font-display-fallback));
   font-weight: 600;
+  font-size: 1rem;
   max-width: 160px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -171,37 +183,38 @@
 }
 
 .youTag {
-  background: linear-gradient(160deg, var(--accent-gold), var(--accent-gold-deep));
-  color: var(--text-inverse);
-  font-size: 0.66rem;
-  font-weight: 800;
-  padding: 4px 9px;
-  border-radius: 999px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  animation: pulseGold 1.6s ease-in-out infinite;
+  background: var(--green);
+  color: var(--ink);
+  font-family: var(--font-display, var(--font-display-fallback));
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 5px 11px;
+  border-radius: 10px;
+  box-shadow: 0 3px 0 var(--green-deep);
+  animation: wiggle 1.4s ease-in-out infinite;
 }
 
-@keyframes pulseGold {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(245, 196, 81, 0.5); }
-  50% { box-shadow: 0 0 0 5px rgba(245, 196, 81, 0); }
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(-4deg) scale(1.04); }
+  75% { transform: rotate(4deg) scale(1.04); }
 }
 
 .checkBadge {
-  background: var(--accent-red);
-  color: white;
-  font-size: 0.66rem;
-  font-weight: 800;
-  padding: 4px 9px;
-  border-radius: 999px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  background: var(--red);
+  color: #fff;
+  font-family: var(--font-display, var(--font-display-fallback));
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 5px 11px;
+  border-radius: 10px;
+  box-shadow: 0 3px 0 var(--red-deep);
   animation: pulse 1s ease-in-out infinite;
 }
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.65; }
+  50% { opacity: 0.6; }
 }
 
 @media (max-width: 720px) {

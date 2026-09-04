@@ -2,11 +2,9 @@
   position: relative;
   width: 100%;
   aspect-ratio: 1 / 1;
-  padding: 8px;
-  border-radius: 16px;
-  background: linear-gradient(160deg, #3a2a1c, #1f1610);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow:
-    var(--shadow-lg),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  padding: 10px;
+  border-radius: 18px;
+  background: #5a3b24;
+  border: 3px solid #7a5535;
+  box-shadow: 0 8px 0 #2d1b0d, 0 22px 40px rgba(0, 0, 0, 0.45);
 }

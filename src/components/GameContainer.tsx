@@ -23,15 +23,15 @@ export function GameContainer() {
             <span className={styles.logoGlyph}>♞</span>
           </div>
           <div className={styles.titleGroup}>
-            <h1 className={styles.title}>Mind &amp; Hand Chess</h1>
-            <span className={styles.subtitle}>2v2 · one picks the piece, one makes the move</span>
+            <h1 className={styles.title}>Mind &amp; Hand</h1>
+            <span className={styles.subtitle}>2v2 chess · one picks, one moves</span>
           </div>
         </div>
 
         <div className={styles.actions}>
           {gameState.syncMode && (
-            <span className={styles.modePill} title="Sync Mode is on">
-              <span aria-hidden="true">🔗</span> Sync Mode
+            <span className={styles.modeChip} title="Sync Mode is on">
+              <span aria-hidden="true">🔗</span> Sync
             </span>
           )}
 
@@ -46,9 +46,9 @@ export function GameContainer() {
             <SpeakerIcon muted={muted} />
           </button>
 
-          <div className={styles.connectionBadge} role="status">
-            <span className={`${styles.dot} ${connected ? styles.dotConnected : styles.dotDisconnected}`} />
-            <span className={styles.connectionText}>{connected ? 'Live' : 'Connecting…'}</span>
+          <div className={`${styles.statusChip} ${connected ? styles.statusLive : styles.statusOffline}`} role="status">
+            <span className={styles.dot} />
+            <span className={styles.statusText}>{connected ? 'Live' : 'Connecting'}</span>
           </div>
         </div>
       </header>
@@ -60,7 +60,7 @@ export function GameContainer() {
 
 function SpeakerIcon({ muted }: { muted: boolean }) {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M11 5 6 9H3v6h3l5 4V5z" />
       {muted ? (
         <>

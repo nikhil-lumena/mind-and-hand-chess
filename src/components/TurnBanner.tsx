@@ -23,13 +23,13 @@ export function TurnBanner() {
           <i />
           <i />
         </span>
-        <span>Waiting for players</span>
-        <span className={styles.waitingCount}>{filled} / 4 seated</span>
+        <span className={styles.waitingText}>Waiting for players</span>
+        <span className={styles.waitingCount}>{filled} / 4</span>
       </div>
     );
   }
 
-  if (['checkmate', 'stalemate', 'draw'].includes(gameState.status)) {
+  if (gameState.status !== 'playing') {
     return null;
   }
 
@@ -71,7 +71,7 @@ export function TurnBanner() {
 
       <span className={styles.playerText}>
         <span className={styles.playerName}>{activeSeat.playerName || seatLabel(activeSeatId)}</span>
-        {isMyTurn && <span className={styles.youTag}>Your turn</span>}
+        {isMyTurn && <span className={styles.youTag}>Your turn!</span>}
         {gameState.isCheck && <span className={styles.checkBadge}>Check</span>}
       </span>
     </div>

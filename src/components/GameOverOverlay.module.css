@@ -1,15 +1,13 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(6, 9, 18, 0.7);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(10, 11, 30, 0.75);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
   z-index: 100;
-  animation: fadeIn 0.3s ease;
+  animation: fadeIn 0.25s ease;
 }
 
 @keyframes fadeIn {
@@ -18,89 +16,74 @@
 }
 
 .dialog {
-  position: relative;
   width: min(440px, 100%);
-  background: var(--bg-card-solid);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-xl);
-  padding: 40px 36px 32px;
+  background: var(--card);
+  border: 3px solid var(--card-edge);
+  border-radius: var(--r-xl);
+  padding: 34px 30px 28px;
   text-align: center;
-  box-shadow: var(--shadow-lg);
-  animation: slideUp 0.4s var(--ease-out);
-  overflow: hidden;
+  box-shadow: var(--shadow-pop);
+  animation: slideUp 0.4s var(--ease-spring);
 }
 
-.dialog::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(400px 200px at 50% -20%, rgba(255, 255, 255, 0.08), transparent 70%);
-  pointer-events: none;
-}
-
-.dialogWin::before {
-  background: radial-gradient(420px 240px at 50% -20%, rgba(245, 196, 81, 0.28), transparent 70%);
+.dialogWin {
+  border-color: var(--gold);
+  box-shadow: 0 8px 0 var(--gold-deep), 0 24px 48px rgba(0, 0, 0, 0.45);
 }
 
 @keyframes slideUp {
-  from { transform: translateY(28px) scale(0.96); opacity: 0; }
+  from { transform: translateY(30px) scale(0.92); opacity: 0; }
   to { transform: translateY(0) scale(1); opacity: 1; }
 }
 
 .icon {
-  width: 88px;
-  height: 88px;
-  margin: 0 auto 18px;
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 16px;
   display: grid;
   place-items: center;
-  border-radius: 50%;
+  border-radius: 28px;
   font-size: 3rem;
   line-height: 1;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-secondary);
+  background: var(--card-2);
+  box-shadow: 0 6px 0 var(--card-shadow);
 }
 
 .iconWin {
-  background: linear-gradient(150deg, var(--accent-gold), var(--accent-gold-deep));
-  color: var(--text-inverse);
-  border-color: transparent;
-  box-shadow: 0 12px 34px -8px rgba(245, 196, 81, 0.7);
+  background: var(--gold);
+  box-shadow: 0 6px 0 var(--gold-deep);
   animation: trophy 0.7s var(--ease-spring) both;
 }
 
 @keyframes trophy {
-  0% { transform: scale(0.4) rotate(-12deg); }
-  70% { transform: scale(1.1) rotate(3deg); }
+  0% { transform: scale(0.3) rotate(-20deg); }
+  70% { transform: scale(1.12) rotate(5deg); }
   100% { transform: scale(1) rotate(0); }
 }
 
 .title {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 6px;
+  font-size: 2.2rem;
+  margin-bottom: 4px;
 }
 
 .subtitle {
-  color: var(--text-secondary);
+  color: var(--text-2);
   font-size: 1rem;
-  margin-bottom: 26px;
+  margin-bottom: 24px;
 }
 
 .syncSummary {
-  margin-bottom: 26px;
+  margin-bottom: 24px;
   padding: 14px;
-  border-radius: var(--radius-lg);
-  background: rgba(167, 139, 250, 0.08);
-  border: 1px solid rgba(167, 139, 250, 0.25);
+  border-radius: var(--r-lg);
+  background: var(--bg-deep);
 }
 
 .syncSummaryTitle {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  font-weight: 700;
-  color: var(--accent-violet);
+  font-family: var(--font-display, var(--font-display-fallback));
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--purple);
   margin-bottom: 12px;
 }
 
@@ -115,69 +98,44 @@
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  padding: 10px;
-  border-radius: var(--radius-md);
-  background: rgba(0, 0, 0, 0.2);
+  padding: 12px 10px;
+  border-radius: var(--r-md);
+  color: var(--stat-fg);
+  background: var(--stat-bg);
+  box-shadow: 0 4px 0 var(--stat-edge);
+}
+
+.syncStatWhite {
+  --stat-bg: var(--cream);
+  --stat-edge: var(--cream-deep);
+  --stat-fg: var(--cream-ink);
+}
+
+.syncStatBlack {
+  --stat-bg: var(--slate);
+  --stat-edge: var(--slate-deep);
+  --stat-fg: #10112b;
 }
 
 .syncStatTeam {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  font-weight: 600;
+  font-size: 0.8rem;
+  font-weight: 800;
 }
 
 .syncStatValue {
-  font-family: var(--font-display, var(--font-sans-fallback));
-  font-size: 1.5rem;
+  font-family: var(--font-display, var(--font-display-fallback));
+  font-size: 1.7rem;
   font-weight: 700;
-  color: var(--text-primary);
 }
 
 .syncStatDetail {
-  font-size: 0.7rem;
-  font-family: var(--font-mono, var(--font-mono-fallback));
-  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  opacity: 0.75;
 }
 
 .actions {
   display: flex;
   flex-direction: column;
   gap: 10px;
-}
-
-.newGameBtn {
-  padding: 13px 36px;
-  border-radius: var(--radius-md);
-  border: none;
-  background: linear-gradient(160deg, var(--accent-gold), var(--accent-gold-deep));
-  color: var(--text-inverse);
-  font-size: 1rem;
-  font-weight: 700;
-  box-shadow: 0 10px 24px -8px rgba(245, 196, 81, 0.7);
-  transition: transform 0.15s var(--ease-out), box-shadow 0.15s;
-}
-
-.newGameBtn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 30px -8px rgba(245, 196, 81, 0.85);
-}
-
-.newGameBtn:active {
-  transform: translateY(0);
-}
-
-.secondaryBtn {
-  padding: 10px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-subtle);
-  background: transparent;
-  color: var(--text-secondary);
-  font-size: 0.85rem;
-  font-weight: 500;
-  transition: background 0.15s, color 0.15s;
-}
-
-.secondaryBtn:hover {
-  background: var(--bg-elevated);
-  color: var(--text-primary);
 }

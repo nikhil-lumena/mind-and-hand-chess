@@ -1,9 +1,7 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(6, 9, 18, 0.65);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(10, 11, 30, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -18,93 +16,87 @@
 }
 
 .dialog {
-  background: var(--bg-card-solid);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-xl);
-  padding: 26px 28px 22px;
-  box-shadow: var(--shadow-lg);
+  background: var(--card);
+  border: 3px solid var(--card-edge);
+  border-radius: var(--r-xl);
+  padding: 24px 26px 22px;
+  box-shadow: var(--shadow-pop);
   text-align: center;
   animation: pop 0.3s var(--ease-spring);
 }
 
 @keyframes pop {
-  from { transform: scale(0.9); opacity: 0; }
+  from { transform: scale(0.85); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
 
 .title {
-  font-size: 1.2rem;
-  font-weight: 700;
-  margin-bottom: 4px;
+  font-size: 1.5rem;
+  margin-bottom: 2px;
 }
 
 .hint {
-  font-size: 0.82rem;
-  color: var(--text-secondary);
+  font-size: 0.88rem;
+  color: var(--text-2);
   margin-bottom: 18px;
 }
 
 .options {
   display: flex;
   gap: 10px;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 
 .option {
-  width: 82px;
+  width: 86px;
   padding: 12px 6px 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-subtle);
-  background: var(--bg-elevated);
-  transition: border-color 0.15s, background 0.15s, transform 0.15s var(--ease-out), box-shadow 0.15s;
+  border-radius: 16px;
+  border: none;
+  background: var(--card-2);
+  box-shadow: 0 4px 0 var(--card-shadow);
+  transition: transform 0.08s, box-shadow 0.08s, background 0.15s;
 }
 
 .option:hover,
 .option:focus-visible {
-  border-color: var(--accent-gold);
-  background: rgba(245, 196, 81, 0.12);
-  transform: translateY(-3px);
-  box-shadow: 0 10px 24px -10px rgba(245, 196, 81, 0.6);
+  background: var(--gold);
+  box-shadow: 0 4px 0 var(--gold-deep);
+}
+
+.option:hover .pieceLabel,
+.option:focus-visible .pieceLabel {
+  color: var(--ink);
+}
+
+.option:active {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 var(--gold-deep);
 }
 
 .pieceIcon {
-  font-size: 42px;
+  font-size: 44px;
   line-height: 1;
 }
 
 .whitePiece {
   color: #fff;
-  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.5));
+  filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.45));
 }
 
 .blackPiece {
-  color: #1a1a1a;
-  filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.85)) drop-shadow(0 2px 3px rgba(0, 0, 0, 0.5));
+  color: #1a1a2e;
+  filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.9)) drop-shadow(0 2px 0 rgba(0, 0, 0, 0.45));
 }
 
 .pieceLabel {
-  font-size: 0.72rem;
+  font-family: var(--font-display, var(--font-display-fallback));
+  font-size: 0.82rem;
   font-weight: 600;
-  color: var(--text-secondary);
-}
-
-.cancelBtn {
-  background: transparent;
-  border: none;
-  color: var(--text-muted);
-  font-size: 0.8rem;
-  padding: 6px 12px;
-  border-radius: var(--radius-sm);
-  transition: color 0.15s, background 0.15s;
-}
-
-.cancelBtn:hover {
-  color: var(--text-primary);
-  background: var(--bg-elevated);
+  color: var(--text-2);
 }
 
 @media (max-width: 420px) {

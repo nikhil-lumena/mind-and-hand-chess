@@ -4,10 +4,10 @@ import React, { useEffect } from 'react';
 import styles from './PromotionDialog.module.css';
 
 const PROMOTION_PIECES = [
-  { key: 'q', white: '\u2655', black: '\u265B', label: 'Queen' },
-  { key: 'r', white: '\u2656', black: '\u265C', label: 'Rook' },
-  { key: 'b', white: '\u2657', black: '\u265D', label: 'Bishop' },
-  { key: 'n', white: '\u2658', black: '\u265E', label: 'Knight' },
+  { key: 'q', white: '♕', black: '♛', label: 'Queen' },
+  { key: 'r', white: '♖', black: '♜', label: 'Rook' },
+  { key: 'b', white: '♗', black: '♝', label: 'Bishop' },
+  { key: 'n', white: '♘', black: '♞', label: 'Knight' },
 ];
 
 interface PromotionDialogProps {
@@ -35,9 +35,9 @@ export function PromotionDialog({ color, onSelect, onCancel }: PromotionDialogPr
         aria-labelledby="promotion-title"
       >
         <h3 id="promotion-title" className={styles.title}>
-          Promote pawn
+          Level up!
         </h3>
-        <p className={styles.hint}>Choose the piece your pawn becomes</p>
+        <p className={styles.hint}>Pick what your pawn becomes</p>
         <div className={styles.options}>
           {PROMOTION_PIECES.map((p, i) => (
             <button
@@ -55,7 +55,7 @@ export function PromotionDialog({ color, onSelect, onCancel }: PromotionDialogPr
             </button>
           ))}
         </div>
-        <button type="button" className={styles.cancelBtn} onClick={onCancel}>
+        <button type="button" className="btn btn-ghost btn-sm" onClick={onCancel}>
           Cancel
         </button>
       </div>

@@ -3,10 +3,11 @@
 import React, { useState } from 'react';
 import { useGame } from '@/context/GameContext';
 import { GameState, SeatId, SEAT_IDS, seatTeam, seatRole, TeamColor } from '@/shared/types';
+import { ResetGameButton } from './ResetGameButton';
 import styles from './Lobby.module.css';
 
 const ROLE_META = {
-  mind: { icon: '🧠', name: 'Mind', blurb: 'Chooses the piece' },
+  mind: { icon: '🧠', name: 'Mind', blurb: 'Picks the piece' },
   hand: { icon: '🤚', name: 'Hand', blurb: 'Makes the move' },
 } as const;
 
@@ -23,21 +24,21 @@ export function Lobby() {
   const filled = SEAT_IDS.filter((s) => gameState.seats[s].playerName !== null).length;
   const canJoin = nameInput.trim().length > 0;
   const inProgress = gameState.status !== 'waiting';
+  const anyoneSeated = filled > 0;
 
   return (
     <div className={styles.lobby}>
       <div className={styles.card}>
         <div className={styles.cardHeader}>
-          <span className={styles.eyebrow}>Lobby</span>
-          <h2 className={styles.heading}>Take a seat</h2>
+          <h2 className={styles.heading}>Pick your seat!</h2>
           <p className={styles.description}>
-            Enter your name and claim a role. The game begins the moment all four seats are filled.
+            Type a name, grab a role. The match starts the moment all four seats are taken.
           </p>
         </div>
 
         <div className={styles.nameRow}>
           <label className={styles.nameLabel} htmlFor="display-name">
-            Display name
+            Your name
           </label>
           <div className={styles.nameField}>
             <input
@@ -62,16 +63,16 @@ export function Lobby() {
         )}
 
         <div className={styles.seatProgress} aria-label={`${filled} of 4 seats filled`}>
-          <div className={styles.seatDots}>
+          <div className={styles.seatPips}>
             {SEAT_IDS.map((s) => (
               <span
                 key={s}
-                className={`${styles.seatDot} ${gameState.seats[s].playerName ? styles.seatDotFilled : ''}`}
+                className={`${styles.seatPip} ${gameState.seats[s].playerName ? styles.seatPipFilled : ''}`}
               />
             ))}
           </div>
           <span className={styles.seatProgressText}>
-            {filled === 4 ? 'All seats filled' : `${filled} / 4 seats filled`}
+            {filled === 4 ? 'Full house!' : `${filled} / 4 seated`}
           </span>
         </div>
 
@@ -90,7 +91,7 @@ export function Lobby() {
           <div className={styles.syncText}>
             <strong>Sync Mode</strong>
             <span className={styles.syncDesc}>
-              The Mind secretly drags a full move too. After the Hand moves, see whether you were thinking alike.
+              The Mind secretly drags a full move too. After the Hand moves, see if you were thinking alike.
             </span>
           </div>
           <button
@@ -106,10 +107,21 @@ export function Lobby() {
           </button>
         </div>
 
-        {inProgress && (
-          <p className={styles.statusNote}>
-            <span aria-hidden="true">♟</span> A game is in progress — grab an open seat to jump in.
-          </p>
+        {(inProgress || anyoneSeated) && (
+          <div className={styles.footer}>
+            <p className={styles.statusNote}>
+              {inProgress ? (
+                <>
+                  <span aria-hidden="true">♟</span> A match is in progress. Grab an open seat to jump in.
+                </>
+              ) : (
+                <>
+                  <span aria-hidden="true">👋</span> Waiting on more players. Stuck with ghosts? Reset the room.
+                </>
+              )}
+            </p>
+            <ResetGameButton className="btn-sm" label="Reset room" />
+          </div>
         )}
       </div>
     </div>
@@ -150,11 +162,7 @@ function TeamColumn({
             <div className={styles.seatInfo}>
               <div className={styles.roleName}>{role.name}</div>
               <div className={styles.playerName}>
-                {occupied ? (
-                  seat.playerName
-                ) : (
-                  <span className={styles.openSeat}>{role.blurb}</span>
-                )}
+                {occupied ? seat.playerName : <span className={styles.openSeat}>{role.blurb}</span>}
               </div>
             </div>
             {occupied ? (
@@ -164,10 +172,10 @@ function TeamColumn({
             ) : (
               <button
                 type="button"
-                className={styles.joinBtn}
+                className={`btn btn-primary btn-sm ${styles.joinBtn}`}
                 disabled={disabled}
                 onClick={() => onJoin(seatId)}
-                title={disabled ? 'Enter a display name first' : `Sit as ${team} ${role.name}`}
+                title={disabled ? 'Enter a name first' : `Sit as ${team} ${role.name}`}
               >
                 Sit
               </button>

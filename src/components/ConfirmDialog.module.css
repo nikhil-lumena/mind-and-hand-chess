@@ -1,0 +1,74 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(10, 11, 30, 0.72);
+  animation: fadeIn 0.18s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.dialog {
+  width: min(420px, 100%);
+  padding: 28px 26px 24px;
+  text-align: center;
+  background: var(--card);
+  border: 3px solid var(--card-edge);
+  border-radius: var(--r-xl);
+  box-shadow: var(--shadow-pop);
+  animation: pop 0.28s var(--ease-spring);
+}
+
+@keyframes pop {
+  from { transform: scale(0.85) translateY(10px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.icon {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 14px;
+  display: grid;
+  place-items: center;
+  font-size: 2.2rem;
+  line-height: 1;
+  border-radius: 22px;
+  background: var(--card-2);
+  box-shadow: 0 5px 0 var(--card-shadow);
+}
+
+.iconDanger {
+  background: var(--red);
+  box-shadow: 0 5px 0 var(--red-deep);
+}
+
+.title {
+  font-size: 1.55rem;
+  margin-bottom: 8px;
+}
+
+.message {
+  color: var(--text-2);
+  font-size: 0.98rem;
+  line-height: 1.5;
+  margin-bottom: 22px;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+@media (max-width: 380px) {
+  .actions {
+    grid-template-columns: 1fr;
+  }
+}
