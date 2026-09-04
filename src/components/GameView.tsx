@@ -8,6 +8,7 @@ import { TurnBanner } from './TurnBanner';
 import { GameOverOverlay } from './GameOverOverlay';
 import { ResetGameButton } from './ResetGameButton';
 import { Countdown } from './Countdown';
+import { ReactionFloats, ReactionTray } from './Reactions';
 import { seatLabel, seatRole } from '@/shared/types';
 import styles from './GameView.module.css';
 
@@ -33,11 +34,14 @@ export function GameView() {
         </div>
         <div className={styles.boardWrapper}>
           <ChessBoard />
+          <ReactionFloats />
         </div>
         <div className={styles.rightPanel}>
           <InfoPanel side="right" />
         </div>
       </div>
+
+      <ReactionTray />
 
       <div className={styles.bottomBar}>
         {mySeatId && (

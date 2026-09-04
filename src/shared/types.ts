@@ -75,3 +75,17 @@ export function seatTeam(seatId: SeatId): TeamColor {
 export function seatRole(seatId: SeatId): Role {
   return seatId.endsWith('mind') ? 'mind' : 'hand';
 }
+
+/* ---- Emoji reactions ---- */
+
+export const REACTION_EMOJIS = ['🔥', '😂', '😱', '👏', '🤯', '💀', '🧠', '🤚'] as const;
+export type ReactionEmoji = (typeof REACTION_EMOJIS)[number];
+
+export interface Reaction {
+  id: string;
+  emoji: ReactionEmoji;
+  name: string;
+  team: TeamColor | null;
+  /** Epoch ms. */
+  at: number;
+}

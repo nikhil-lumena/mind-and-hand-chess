@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { useRealtime } from './RealtimeContext';
-import type { GameState, SeatId } from '@/shared/types';
+import type { GameState, Reaction, ReactionEmoji, SeatId } from '@/shared/types';
 import { createInitialState, tryMakeMove } from '@/shared/gameEngine';
 
 interface GameContextValue {
@@ -24,6 +24,9 @@ interface GameContextValue {
   clearError: () => void;
   /** True once the first server state has been received (or the fetch failed). */
   hydrated: boolean;
+  /** Live emoji reactions from everyone in the room (only ones seen after load). */
+  reactions: Reaction[];
+  sendReaction: (emoji: ReactionEmoji) => void;
 }
 
 const GameContext = createContext<GameContextValue | null>(null);
@@ -54,6 +57,9 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   const [myPlayerName, setMyPlayerName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [hydrated, setHydrated] = useState(false);
+  const [reactions, setReactions] = useState<Reaction[]>([]);
+  const seenReactionsRef = useRef<Set<string>>(new Set());
+  const reactionsArmedRef = useRef(false);
   const clientIdRef = useRef(clientId);
   clientIdRef.current = clientId;
   const chunksRef = useRef<Map<string, string[]>>(new Map());
@@ -71,7 +77,16 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     if (channel) return;
 
     const interval = setInterval(loadState, 400);
-    return () => clearInterval(interval);
+    const reactionPoll = setInterval(() => {
+      apiCall('/api/game/reactions')
+        .then((list: Reaction[]) => list.forEach(ingestReaction))
+        .catch(() => {});
+    }, 700);
+    return () => {
+      clearInterval(interval);
+      clearInterval(reactionPoll);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channel]);
 
   useEffect(() => {
@@ -106,16 +121,49 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       apiCall('/api/game/cleanup', { disconnectedClientId: member.id }).catch(() => {});
     };
 
+    const onReaction = (r: Reaction) => ingestReaction(r);
+
     channel.bind('game-state', onState);
     channel.bind('game-state-chunk', onStateChunk);
     channel.bind('pusher:member_removed', onMemberRemoved);
+    channel.bind('reaction', onReaction);
 
     return () => {
       channel.unbind('game-state', onState);
       channel.unbind('game-state-chunk', onStateChunk);
       channel.unbind('pusher:member_removed', onMemberRemoved);
+      channel.unbind('reaction', onReaction);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channel]);
+
+  /**
+   * Dedupes by id and ignores the backlog that exists when we first load, so
+   * a page refresh doesn't replay ten seconds of emoji.
+   */
+  function ingestReaction(r: Reaction) {
+    const seen = seenReactionsRef.current;
+    if (seen.has(r.id)) return;
+    seen.add(r.id);
+    if (seen.size > 200) {
+      seen.delete(seen.values().next().value as string);
+    }
+    if (!reactionsArmedRef.current) return;
+    if (Date.now() - r.at > 8000) return;
+    setReactions((prev) => [...prev.slice(-29), r]);
+    window.setTimeout(() => {
+      setReactions((prev) => prev.filter((x) => x.id !== r.id));
+    }, 3000);
+  }
+
+  // Arm reactions shortly after the first load so the initial backlog is skipped.
+  useEffect(() => {
+    if (!hydrated) return;
+    const t = window.setTimeout(() => {
+      reactionsArmedRef.current = true;
+    }, 1000);
+    return () => window.clearTimeout(t);
+  }, [hydrated]);
 
   function syncMySeat(state: GameState, cid: string) {
     setMySeatId(() => {
@@ -223,6 +271,19 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     apiCall('/api/game/sync-mode', { syncMode: enabled }).catch((err) => setError(err.message));
   }, []);
 
+  const sendReaction = useCallback(
+    (emoji: ReactionEmoji) => {
+      apiCall('/api/game/react', { emoji, clientId, name: myPlayerName })
+        .then((res: { reaction?: Reaction }) => {
+          // Show our own reaction immediately; the broadcast is deduped by id.
+          if (res.reaction) ingestReaction(res.reaction);
+        })
+        .catch(() => {});
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [clientId, myPlayerName],
+  );
+
   const clearError = useCallback(() => setError(null), []);
 
   return (
@@ -244,6 +305,8 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         error,
         clearError,
         hydrated,
+        reactions,
+        sendReaction,
       }}
     >
       {children}

@@ -1,14 +1,20 @@
 import { getRedis, hasRedisConfig } from './redis';
 import { getPusher, GAME_CHANNEL } from './pusher-server';
-import type { GameState, MindIntent } from '@/shared/types';
+import type { GameState, MindIntent, Reaction } from '@/shared/types';
 import { createInitialState } from '@/shared/gameEngine';
 
 const STATE_KEY = 'game:state';
 const MIND_INTENT_KEY = 'game:mind-intent';
+const REACTIONS_KEY = 'game:reactions';
+
+/** Reactions are ephemeral: keep a short, recent ring so pollers can catch up. */
+const REACTION_TTL_MS = 10_000;
+const REACTION_MAX = 24;
 
 type MemoryStore = {
   state: GameState;
   intent: MindIntent | null;
+  reactions: Reaction[];
 };
 
 const globalForStore = globalThis as typeof globalThis & {
@@ -20,6 +26,7 @@ function memory(): MemoryStore {
     globalForStore.__mindHandStore = {
       state: createInitialState(),
       intent: null,
+      reactions: [],
     };
   }
   return globalForStore.__mindHandStore;
@@ -76,6 +83,37 @@ export async function clearMindIntent(): Promise<void> {
   }
   const redis = getRedis();
   await redis.del(MIND_INTENT_KEY);
+}
+
+function pruneReactions(list: Reaction[], now: number): Reaction[] {
+  return list.filter((r) => now - r.at < REACTION_TTL_MS).slice(-REACTION_MAX);
+}
+
+export async function getReactions(): Promise<Reaction[]> {
+  const now = Date.now();
+  if (!hasRedisConfig()) {
+    memory().reactions = pruneReactions(memory().reactions, now);
+    return memory().reactions;
+  }
+  const redis = getRedis();
+  const raw = (await redis.get<Reaction[]>(REACTIONS_KEY)) ?? [];
+  return pruneReactions(raw, now);
+}
+
+/** Appends a reaction to the ring and fans it out over Pusher when available. */
+export async function pushReaction(reaction: Reaction): Promise<void> {
+  const now = Date.now();
+  if (!hasRedisConfig()) {
+    memory().reactions = pruneReactions([...memory().reactions, reaction], now);
+  } else {
+    const redis = getRedis();
+    const raw = (await redis.get<Reaction[]>(REACTIONS_KEY)) ?? [];
+    await redis.set(REACTIONS_KEY, pruneReactions([...raw, reaction], now), { ex: 60 });
+  }
+  const pusher = getPusher();
+  if (pusher) {
+    await pusher.trigger(GAME_CHANNEL, 'reaction', reaction);
+  }
 }
 
 export async function updateAndBroadcast(state: GameState): Promise<void> {

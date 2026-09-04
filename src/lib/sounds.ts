@@ -257,3 +257,12 @@ export function playDraw(): void {
     tone(c, dest, { freq: 440, at: 0.35, duration: 0.6, type: 'triangle', gain: 0.25 });
   });
 }
+
+/** Bubbly "boop" when an emoji reaction floats up. Pitch varies per emoji. */
+export function playReact(seed = 0): void {
+  withMaster(0.35, (c, dest) => {
+    const base = 520 + (seed % 5) * 60;
+    tone(c, dest, { freq: base, glideTo: base * 1.6, at: 0, duration: 0.12, type: 'sine', gain: 0.3 });
+    tone(c, dest, { freq: base * 2, at: 0.06, duration: 0.1, type: 'triangle', gain: 0.08 });
+  });
+}
